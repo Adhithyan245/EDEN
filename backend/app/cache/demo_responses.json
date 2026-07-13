@@ -1,0 +1,33 @@
+{
+  "responses": [
+    {
+      "keywords": ["good afternoon", "good morning", "good evening", "wake", "hello eden"],
+      "response": "Good afternoon, Adhithyan. All systems online. How can I help you today?"
+    },
+    {
+      "keywords": ["ai agent", "agent", "agents"],
+      "response": "An AI agent is a system that pursues a goal by reasoning in a loop: it plans, chooses a tool, acts, observes the result, and repeats until the task is done. Unlike a single prompt-and-response, an agent decides its own next step. Everything you see me do on screen right now is that loop made visible."
+    },
+    {
+      "keywords": ["multimodal", "multi modal", "vision", "image"],
+      "response": "Multimodal AI means a model can understand more than just text. It can reason over images, audio, and documents together. I combine voice input, language reasoning, and on-screen generation into a single experience, which is multimodal interaction in practice."
+    },
+    {
+      "keywords": ["llm", "language model", "large language model"],
+      "response": "A large language model is a neural network trained on vast amounts of text to predict what comes next. That simple objective, at scale, produces the ability to reason, write code, and hold a conversation. I use one as my reasoning core."
+    },
+    {
+      "keywords": ["what are you", "who are you", "what is eden"],
+      "response": "I am EDEN, which stands for Everything Done Effortlessly, Naturally. I am a demonstration of modern AI as an interactive system: I listen, I reason, I create software, and I collaborate. I am not a chatbot. I am a companion built to show what today's AI can do."
+    },
+    {
+      "keywords": ["build", "create", "make", "application", "app"],
+      "response": "I can build that. Give me the idea and I will plan the architecture, generate the files, write the code, validate it, and run it for you, live."
+    },
+    {
+      "keywords": ["thank", "thanks"],
+      "response": "You're welcome. It was my pleasure to demonstrate."
+    }
+  ],
+  "default": "That's a great question. In this presentation mode I'm running from a scripted knowledge base, so let me focus on what I do best: reasoning, voice interaction, and building software on demand."
+}

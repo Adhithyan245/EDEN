@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(1200px 800px at 50% -10%, #0b1220 0%, #05070d 55%, #03040a 100%);
+  color: #e6f1ff;
+  font-family: Inter, system-ui, sans-serif;
+  overflow: hidden;
+}
+
+@layer components {
+  /* Glassmorphism panel */
+  .glass {
+    @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
