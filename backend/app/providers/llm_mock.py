@@ -1,14 +1,16 @@
 """Mock LLM provider — lets EDEN run end-to-end with zero credentials.
 
-Used whenever no Claude access is configured (outside PRESENTATION mode).
-Streams a plausible reply word-by-word so the full UI/voice loop works in dev.
+Returns a JSON payload compatible with the personality layer's emotion
+extraction so the full pipeline (emotion event → re-stream → TTS) works in
+dev without any API keys.
 """
 
 from __future__ import annotations
 
-import asyncio
+import json
 from typing import AsyncIterator, Optional
 
+from ..agents.intent import IntentType
 from .base import Message
 
 
@@ -21,13 +23,15 @@ class MockLLM:
         system: str,
         *,
         model: Optional[str] = None,
+        intent: Optional[IntentType] = None,
     ) -> AsyncIterator[str]:
         user = messages[-1]["content"] if messages else ""
-        reply = (
-            f"This is EDEN's mock reasoning layer - no live model is connected yet. "
-            f"You said: \"{user[:120]}\". Once an Anthropic API key is configured, "
-            f"I'll answer for real."
-        )
-        for word in reply.split(" "):
-            yield word + " "
-            await asyncio.sleep(0.03)
+        payload = json.dumps({
+            "emotion": "idle",
+            "response": (
+                f"I am running on the mock reasoning layer — no live model is connected. "
+                f"You said: \"{user[:80]}\". "
+                f"Add GEMINI_API_KEY to backend/.env to activate the real model."
+            ),
+        })
+        yield payload

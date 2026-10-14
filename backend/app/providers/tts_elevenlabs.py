@@ -30,7 +30,12 @@ class ElevenLabsTTS:
         payload = {
             "text": text,
             "model_id": "eleven_turbo_v2_5",
-            "voice_settings": {"stability": 0.4, "similarity_boost": 0.8},
+            "voice_settings": {
+                "stability": 0.35,         # lower = more expressive/varied delivery (was 0.5, read flat)
+                "similarity_boost": 0.75,
+                "style": 0.35,             # raised for warmth/energy in prosody (was 0.12, too neutral)
+                "use_speaker_boost": True, # improves clarity and presence
+            },
         }
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(url, headers=headers, json=payload)

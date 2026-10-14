@@ -16,23 +16,28 @@ from .tts_browser import BrowserTTS
 
 log = logging.getLogger("eden.providers")
 
+# ----
+
+from ..agents.researcher import ResearchAgent, SearchToolProvider
+from ..tools.search import SearchTool
+
 
 def build_llm() -> LLMProvider:
     if settings.mode == DemoMode.PRESENTATION:
         log.info("LLM -> ScriptedLLM (PRESENTATION mode)")
         return ScriptedLLM()
 
-    if settings.has_anthropic:
+    if settings.has_gemini:
         try:
-            from .llm_claude import ClaudeLLM  # lazy import
+            from .llm_gemini import GeminiLLM  # lazy import
 
-            log.info("LLM -> ClaudeLLM")
-            return ClaudeLLM()
+            log.info("LLM -> GeminiLLM")
+            return GeminiLLM()
         except Exception as exc:  # noqa: BLE001 - degrade, never crash
-            log.warning("ClaudeLLM init failed (%s); falling back to MockLLM", exc)
+            log.warning("GeminiLLM init failed (%s); falling back to MockLLM", exc)
             return MockLLM()
 
-    log.warning("No Anthropic access configured; LLM -> MockLLM")
+    log.warning("No Gemini access configured; LLM -> MockLLM")
     return MockLLM()
 
 
@@ -53,6 +58,30 @@ def build_tts() -> TTSProvider:
 
     log.info("TTS -> BrowserTTS")
     return BrowserTTS()
+
+
+def build_search_tool() -> SearchTool:
+    """Build a SearchTool with available providers.
+
+    Checks credentials at startup:
+        1. TAVILY_API_KEY → TavilySearchProvider
+        Returns a no-op SearchTool if no keys are found.
+    """
+    if settings.has_tavily:
+        log.info("SearchTool -> TavilySearchProvider")
+        from ..tools.search import TavilySearchProvider
+        return SearchTool(provider=TavilySearchProvider(api_key=settings.tavily_api_key))
+
+    log.warning("No search provider configured (set TAVILY_API_KEY)")
+    return SearchTool(provider=None)
+
+
+def build_research_agent() -> ResearchAgent:
+    """Build a ResearchAgent with a configured SearchTool."""
+    search_tool = build_search_tool()
+    provider = SearchToolProvider(search_tool)
+    log.info("ResearchAgent initialized with SearchToolProvider")
+    return ResearchAgent(search_provider=provider, max_results=5)
 
 
 def describe() -> dict[str, str]:

@@ -15,8 +15,8 @@ EDEN runs in exactly one of three modes, chosen at startup via the `EDEN_MODE` e
 
 | Mode | Reasoning | Voice | Tools / Builder | External APIs | Use for |
 |------|-----------|-------|-----------------|---------------|---------|
-| **LIVE** | Real Claude, streamed | ElevenLabs if available, else browser | Real generation | Required (falls back per-call on error) | Rehearsal, ideal conditions |
-| **SAFE** | Real Claude if available, else scripted | **Browser TTS by default** (ElevenLabs only if explicitly enabled) | Real, with cached/prebuilt fallback on failure | Optional — degrades gracefully | **The actual lecture (recommended default)** |
+| **LIVE** | Real Gemini, streamed | ElevenLabs if available, else browser | Real generation | Required (falls back per-call on error) | Rehearsal, ideal conditions |
+| **SAFE** | Real Gemini if available, else mock | **Browser TTS by default** (ElevenLabs only if explicitly enabled) | Real, with cached/prebuilt fallback on failure | Optional — degrades gracefully | **The actual lecture (recommended default)** |
 | **PRESENTATION** | Fully scripted responses, **no external calls** | Browser TTS (or pre-generated clips) | Prebuilt/replayed only | **None** | Emergency parachute if the venue network dies |
 
 ### Guarantees per mode
@@ -31,8 +31,8 @@ EDEN runs in exactly one of three modes, chosen at startup via the `EDEN_MODE` e
 `config.py` reads `EDEN_MODE`, then the provider factory selects concrete providers based on **mode + credential availability**:
 
 ```
-EDEN_MODE=LIVE          + Claude key present     → ClaudeLLM
-EDEN_MODE=LIVE/SAFE     + no Claude key          → MockLLM (logs a warning)   ← dev never blocks
+EDEN_MODE=LIVE          + Gemini key present     → GeminiLLM
+EDEN_MODE=LIVE/SAFE     + no Gemini key          → MockLLM (logs a warning)   ← dev never blocks
 EDEN_MODE=PRESENTATION  (any)                    → ScriptedLLM (cache only)
 
 ELEVENLABS key present + mode != PRESENTATION + voice enabled → ElevenLabsTTS
@@ -63,7 +63,7 @@ class LLMProvider(Protocol):
 
 | Implementation | When used | Notes |
 |----------------|-----------|-------|
-| `ClaudeLLM` | LIVE / SAFE with key | Anthropic SDK, streamed. Sonnet 5 for voice turns, Opus 4.8 for the builder agent. |
+| `GeminiLLM` | LIVE / SAFE with key | Google Gemini SDK, streamed. gemini-2.5-flash for voice turns, gemini-2.5-pro for the builder agent. |
 | `ScriptedLLM` | PRESENTATION | Returns cached responses keyed by intent; streams them word-by-word for realism. |
 | `MockLLM` | Dev / no key | Canned but plausible replies so the whole app runs offline. |
 

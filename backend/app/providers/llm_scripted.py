@@ -7,11 +7,11 @@ work, even with no network at all.
 
 from __future__ import annotations
 
-import asyncio
 import json
 from pathlib import Path
 from typing import AsyncIterator, Optional
 
+from ..agents.intent import IntentType
 from .base import Message
 
 _CACHE = Path(__file__).resolve().parent.parent / "cache" / "demo_responses.json"
@@ -45,9 +45,9 @@ class ScriptedLLM:
         system: str,
         *,
         model: Optional[str] = None,
+        intent: Optional[IntentType] = None,
     ) -> AsyncIterator[str]:
+        import json
         user = messages[-1]["content"] if messages else ""
         reply = self._match(user)
-        for word in reply.split(" "):
-            yield word + " "
-            await asyncio.sleep(0.035)
+        yield json.dumps({"emotion": "confident", "response": reply})
