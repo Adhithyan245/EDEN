@@ -143,3 +143,12 @@ def test_hedge_winner_keeps_streaming_after_the_loser_is_cancelled(monkeypatch):
     tts._pump = pump
     assert asyncio.run(asyncio.wait_for(_collect(tts), 2)) == b"one two three"
     assert "backup" not in tts._down_until and "primary" in tts._down_until
+
+
+def test_fails_fast_when_every_model_is_cooling_down():
+    tts, calls = _tts({"primary": [[b"x"]], "backup": [[b"y"]]})
+    import time as _t
+    tts._down_until = {"primary": _t.monotonic() + 60, "backup": _t.monotonic() + 60}
+    with pytest.raises(RuntimeError, match="cooling down"):
+        asyncio.run(_collect(tts))
+    assert calls == []  # no wasted request while the quota is exhausted

@@ -4,7 +4,9 @@ Extracted from main.py so both the conversational pipeline and the agent
 orchestrator can speak through the same code path without duplication.
 
 Streaming voices (Gemini) send ``speech_stream_start`` → ``speech_chunk``… →
-``speech_stream_end`` and the frontend plays each chunk as it lands. Streaming
+``speech_stream_end`` and the frontend plays each chunk as it lands. If the
+stream can't start (quota, outage), the provider's ``fallback`` voice (e.g.
+ElevenLabs) speaks the line, and browser speech is the last resort. Streaming
 runs in the background so a narration never holds up a build, and one lock per
 connection keeps lines in order: a line starts only after the previous one has
 finished sending (the frontend queues playback the same way).
@@ -118,4 +120,19 @@ async def stream_speech(websocket: WebSocket, tts: TTSProvider, text: str) -> No
             await websocket.send_json(events.speech_stream_end(sid, ok=False))
             return
     if not started:
-        await websocket.send_json(events.speak(text))
+        await _fallback_voice(websocket, tts, text)
+
+
+async def _fallback_voice(websocket: WebSocket, tts: TTSProvider, text: str) -> None:
+    """The streaming voice couldn't speak: try its fallback, then the browser."""
+    fallback = getattr(tts, "fallback", None)
+    if fallback is not None:
+        try:
+            audio = await fallback.synthesize(text)
+            if audio:
+                b64 = base64.b64encode(audio).decode("ascii")
+                await websocket.send_json(events.speech_audio(b64))
+                return
+        except Exception as exc:  # noqa: BLE001
+            log.warning("fallback voice %s failed (%s)", getattr(fallback, "name", "?"), exc)
+    await websocket.send_json(events.speak(text))

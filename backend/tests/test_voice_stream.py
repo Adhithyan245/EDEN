@@ -119,3 +119,44 @@ def test_browser_engine_unchanged():
     ws = _WS()
     asyncio.run(voice.speak(ws, _Browser(), "plain"))
     assert ws.events == [{"type": "speak", "text": "plain"}]
+
+
+class _FileVoice:
+    name = "file"
+    engine = "server_audio"
+
+    def __init__(self, audio=b"mp3", fail=False):
+        self.audio, self.fail, self.calls = audio, fail, 0
+
+    async def synthesize(self, text):
+        self.calls += 1
+        if self.fail:
+            raise RuntimeError("out of credits")
+        return self.audio
+
+
+def test_stream_failure_uses_fallback_voice_before_browser():
+    tts = _StreamTTS([b"\0\0" * 100], fail_after=0)
+    tts.fallback = _FileVoice(b"elevenlabs-mp3")
+    ws = _WS()
+    _run(ws, tts, "quota is gone")
+    assert [e["type"] for e in ws.events] == ["speech_audio"]
+    assert base64.b64decode(ws.events[0]["audio_b64"]) == b"elevenlabs-mp3"
+
+
+def test_browser_is_last_resort_when_fallback_also_fails():
+    tts = _StreamTTS([b"\0\0" * 100], fail_after=0)
+    tts.fallback = _FileVoice(fail=True)
+    ws = _WS()
+    _run(ws, tts, "everything is down")
+    assert ws.events == [{"type": "speak", "text": "everything is down"}]
+    assert tts.fallback.calls == 1
+
+
+def test_fallback_not_used_when_stream_works():
+    tts = _StreamTTS([b"\0\0" * 3000])
+    tts.fallback = _FileVoice()
+    ws = _WS()
+    _run(ws, tts, "fine")
+    assert tts.fallback.calls == 0
+    assert ws.events[0]["type"] == "speech_stream_start"

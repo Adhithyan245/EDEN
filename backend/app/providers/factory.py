@@ -48,8 +48,14 @@ def build_tts() -> TTSProvider:
         try:
             from .tts_gemini import GeminiTTS  # lazy import
 
-            log.info("TTS -> GeminiTTS (streaming, voice=%s)", settings.tts_voice)
-            return GeminiTTS()
+            tts = GeminiTTS()
+            if settings.has_elevenlabs:
+                from .tts_elevenlabs import ElevenLabsTTS  # lazy import
+
+                tts.fallback = ElevenLabsTTS()
+            log.info("TTS -> GeminiTTS (streaming, voice=%s, fallback=%s)", settings.tts_voice,
+                     tts.fallback.name if tts.fallback else "browser")
+            return tts
         except Exception as exc:  # noqa: BLE001
             log.warning("GeminiTTS init failed (%s); trying the next voice", exc)
 

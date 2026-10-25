@@ -1,5 +1,5 @@
 # Render Blueprint for EDEN's backend. In the Render dashboard:
-# New → Blueprint → pick this repo. Render asks for GEMINI_API_KEY (sync: false).
+# New → Blueprint → pick this repo. Render asks for the `sync: false` secrets.
 services:
   - type: web
     name: eden-backend
@@ -13,6 +13,9 @@ services:
       # Secrets — entered in the dashboard, never committed.
       - key: GEMINI_API_KEY
         sync: false
+      # Fallback voice when Gemini's free speech quota runs out (optional).
+      - key: ELEVENLABS_API_KEY
+        sync: false
       # Open to everyone: no EDEN_ACCESS_CODE. Set one in the dashboard to make
       # the UI ask visitors for a code.
       # The Vercel URL(s) allowed to open the socket, comma-separated.
@@ -25,8 +28,8 @@ services:
       # Memory is one shared store; on a public server it would mix visitors.
       - key: EDEN_MEMORY_ENABLED
         value: "false"
-      # Streamed Gemini voice: natural, ~1 s to first audio, same key (no
-      # ElevenLabs credits). Falls back to browser speech if its quota runs out.
+      # Streamed Gemini voice: natural, ~1 s to first audio, same key. When its
+      # quota runs out, ElevenLabs speaks (if its key is set), then the browser.
       - key: EDEN_VOICE_ENABLED
         value: "true"
       - key: EDEN_TTS_PROVIDER

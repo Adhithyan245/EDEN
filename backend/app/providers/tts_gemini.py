@@ -45,6 +45,9 @@ class GeminiTTS:
     name = "gemini"
     engine = "server_stream"
     sample_rate = SAMPLE_RATE
+    # Optional complete-file voice used when no Gemini model can speak
+    # (set by the factory, e.g. ElevenLabs). Browser speech is the last resort.
+    fallback = None
 
     def __init__(self) -> None:
         self._client = genai.Client(api_key=settings.gemini_api_key)
@@ -74,7 +77,11 @@ class GeminiTTS:
         """
         prompt = f"{settings.tts_style}: {text}" if settings.tts_style else text
         now = time.monotonic()
-        queue_models = [m for m in self._models if now >= self._down_until.get(m, 0.0)] or list(self._models)
+        queue_models = [m for m in self._models if now >= self._down_until.get(m, 0.0)]
+        if not queue_models:
+            # Every model is cooling down (typically the daily free quota):
+            # fail fast so the fallback voice speaks without an extra delay.
+            raise RuntimeError("all Gemini voice models are cooling down")
         racers: list[tuple[str, asyncio.Queue, asyncio.Task]] = []
 
         def launch() -> bool:
