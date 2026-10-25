@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Optional
 
 from .base import ToolResult
@@ -21,7 +21,10 @@ def resolve_within(root: Path, relative: str) -> Optional[Path]:
     Guards LLM-supplied paths: rejects absolute paths, drive letters, and any
     ``..`` traversal that lands outside the workspace.
     """
-    if not relative or Path(relative).is_absolute() or Path(relative).drive:
+    # Check both path flavours so a Windows drive path ("C:/...") is refused on
+    # Linux too, where it would otherwise read as a relative folder "C:".
+    win = PureWindowsPath(relative)
+    if not relative or Path(relative).is_absolute() or win.drive or win.is_absolute():
         return None
     base = root.resolve()
     target = (base / relative).resolve()
