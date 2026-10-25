@@ -116,10 +116,14 @@ async def diagnose(request: Request) -> dict:
     """Live connectivity check for the currently selected LLM provider.
 
     Spends an LLM call, so a public deployment requires the access code in the
-    ``X-EDEN-Access`` header.
+    ``X-EDEN-Access`` header, and an open public deployment (origin allow-list
+    but no code) disables it.
     """
-    if guard.access_code and request.headers.get("x-eden-access") != guard.access_code:
-        raise HTTPException(status_code=401, detail="access code required")
+    if guard.access_code:
+        if request.headers.get("x-eden-access") != guard.access_code:
+            raise HTTPException(status_code=401, detail="access code required")
+    elif guard.allowed_origins:
+        raise HTTPException(status_code=404, detail="not available on this deployment")
     result: dict = {
         "mode": settings.mode.value,
         "llm":  LLM.name,
@@ -218,6 +222,10 @@ async def ws(websocket: WebSocket) -> None:
             pass
 
 
+def _client_ip(websocket: WebSocket) -> str:
+    return websocket.client.host if websocket.client else "unknown"
+
+
 async def _notice(websocket: WebSocket, text: str) -> None:
     """Tell the user something without running the LLM (limits, busy)."""
     await websocket.send_json(events.response_ready(text))
@@ -258,7 +266,7 @@ async def _resume_after_clarification(
         reason = "clarification answered",
     )
     try:
-        async with guard.agent_slot() as refused:
+        async with guard.agent_slot(_client_ip(websocket)) as refused:
             if refused:
                 await _notice(websocket, refused)
                 return
@@ -340,7 +348,7 @@ async def _handle_user_message(
                 if decision.task.intent == TaskIntent.EDIT:
                     # Show the constellation immediately so the audience sees the
                     # build environment before the 5-8 s edit-plan wait.
-                    async with guard.agent_slot() as refused:
+                    async with guard.agent_slot(_client_ip(websocket)) as refused:
                         if refused:
                             await _notice(websocket, refused)
                             return
@@ -372,7 +380,7 @@ async def _handle_user_message(
                         await websocket.send_json(events.state(events.State.IDLE))
                         return   # wait for the answer; build resumes next turn
                     # Show the planning phase immediately before the 4-5 s LLM wait.
-                    async with guard.agent_slot() as refused:
+                    async with guard.agent_slot(_client_ip(websocket)) as refused:
                         if refused:
                             await _notice(websocket, refused)
                             return

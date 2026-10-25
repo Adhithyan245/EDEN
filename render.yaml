@@ -1,5 +1,5 @@
 # Render Blueprint for EDEN's backend. In the Render dashboard:
-# New → Blueprint → pick this repo. Render asks for every `sync: false` value.
+# New → Blueprint → pick this repo. Render asks for GEMINI_API_KEY (sync: false).
 services:
   - type: web
     name: eden-backend
@@ -13,11 +13,11 @@ services:
       # Secrets — entered in the dashboard, never committed.
       - key: GEMINI_API_KEY
         sync: false
-      - key: EDEN_ACCESS_CODE
-        sync: false
+      # Open to everyone: no EDEN_ACCESS_CODE. Set one in the dashboard to make
+      # the UI ask visitors for a code.
       # The Vercel URL(s) allowed to open the socket, comma-separated.
       - key: EDEN_ALLOWED_ORIGINS
-        sync: false
+        value: https://eden-alpha-sable.vercel.app,https://eden-adhithyan245s-projects.vercel.app
       - key: EDEN_MODE
         value: SAFE
       - key: EDEN_AGENT_ENABLED
@@ -34,3 +34,5 @@ services:
         value: "12"
       - key: EDEN_MAX_AGENT_TASKS_PER_HOUR
         value: "30"
+      - key: EDEN_MAX_AGENT_TASKS_PER_IP_PER_HOUR
+        value: "6"

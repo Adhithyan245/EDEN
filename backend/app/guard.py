@@ -11,6 +11,7 @@ deployment sets:
                             (e.g. https://eden.vercel.app). Unset = any.
   EDEN_MAX_MESSAGES_PER_MINUTE   per connection (default 12)
   EDEN_MAX_AGENT_TASKS_PER_HOUR  builds + edits across all visitors (default 30)
+  EDEN_MAX_AGENT_TASKS_PER_IP_PER_HOUR  builds + edits per visitor IP (default 6)
 
 Agent tasks (build / edit) also run one at a time across the whole server:
 each runs npm, which is the expensive part on a small instance.
@@ -51,6 +52,8 @@ class Guard:
         self.allowed_origins = {o.strip().rstrip("/") for o in origins.split(",") if o.strip()}
         self.max_messages_per_minute = _int("EDEN_MAX_MESSAGES_PER_MINUTE", 12)
         self.max_agent_tasks_per_hour = _int("EDEN_MAX_AGENT_TASKS_PER_HOUR", 30)
+        self.max_agent_tasks_per_ip = _int("EDEN_MAX_AGENT_TASKS_PER_IP_PER_HOUR", 6)
+        self._ip_starts: dict[str, deque[float]] = {}
         self._agent_lock = asyncio.Lock()
         self._agent_starts: deque[float] = deque()
 
@@ -91,11 +94,20 @@ class Guard:
         return SlidingWindow(self.max_messages_per_minute, 60.0)
 
     @asynccontextmanager
-    async def agent_slot(self) -> AsyncIterator[Optional[str]]:
-        """Yield None when a build/edit may run, else the reason it may not."""
+    async def agent_slot(self, client: Optional[str] = None) -> AsyncIterator[Optional[str]]:
+        """Yield None when a build/edit may run, else the reason it may not.
+
+        ``client`` is the visitor's IP (behind a proxy, uvicorn's
+        --proxy-headers resolves it from X-Forwarded-For).
+        """
         now = time.monotonic()
-        while self._agent_starts and now - self._agent_starts[0] > 3600:
-            self._agent_starts.popleft()
+        _expire(self._agent_starts, now)
+        mine = self._ip_starts.setdefault(client or "unknown", deque())
+        _expire(mine, now)
+        if len(mine) >= self.max_agent_tasks_per_ip:
+            yield ("You've used your builds for this hour. Try again a little later, "
+                   "and I'm happy to keep talking in the meantime.")
+            return
         if len(self._agent_starts) >= self.max_agent_tasks_per_hour:
             yield "I've hit this hour's build limit. Try again a little later."
             return
@@ -104,7 +116,13 @@ class Guard:
             return
         async with self._agent_lock:
             self._agent_starts.append(now)
+            mine.append(now)
             yield None
+
+
+def _expire(hits: deque, now: float) -> None:
+    while hits and now - hits[0] > 3600:
+        hits.popleft()
 
 
 class SlidingWindow:

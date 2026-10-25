@@ -18,8 +18,8 @@ def _code(code: str) -> str:
 
 
 def _guard(monkeypatch, **env) -> Guard:
-    for k in ("EDEN_ACCESS_CODE", "EDEN_ALLOWED_ORIGINS",
-              "EDEN_MAX_MESSAGES_PER_MINUTE", "EDEN_MAX_AGENT_TASKS_PER_HOUR"):
+    for k in ("EDEN_ACCESS_CODE", "EDEN_ALLOWED_ORIGINS", "EDEN_MAX_MESSAGES_PER_MINUTE",
+              "EDEN_MAX_AGENT_TASKS_PER_HOUR", "EDEN_MAX_AGENT_TASKS_PER_IP_PER_HOUR"):
         monkeypatch.delenv(k, raising=False)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
@@ -78,3 +78,23 @@ def test_agent_slot_serializes_and_caps(monkeypatch):
     assert first is None and second is None
     assert concurrent and "another build" in concurrent
     assert third and "limit" in third
+
+
+def test_empty_access_code_means_open(monkeypatch):
+    g = _guard(monkeypatch, EDEN_ACCESS_CODE="")
+    assert g.access_code is None and g.authorized(_ws())
+
+
+def test_per_ip_cap_does_not_block_other_visitors(monkeypatch):
+    g = _guard(monkeypatch, EDEN_MAX_AGENT_TASKS_PER_IP_PER_HOUR="1")
+
+    async def run(ip):
+        async with g.agent_slot(ip) as refused:
+            return refused
+
+    async def scenario():
+        return [await run("1.1.1.1"), await run("1.1.1.1"), await run("2.2.2.2")]
+
+    first, again, other = asyncio.run(scenario())
+    assert first is None and other is None
+    assert again and "your builds" in again
