@@ -14,6 +14,7 @@ Uses the same GEMINI_API_KEY as the LLM, so it adds no new credential or bill.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 from typing import AsyncIterator, Optional
@@ -27,8 +28,17 @@ log = logging.getLogger("eden.tts.gemini")
 
 SAMPLE_RATE = 24000
 
-# A failing model (quota, overload) is skipped for this long.
-_COOLDOWN_SECONDS = 120.0
+# A failing or stalling model (quota, overload) is skipped for this long.
+_COOLDOWN_SECONDS = 120
+
+# If the first model hasn't produced audio by now, start the next in parallel.
+# Healthy first audio is ~0.7 s; a stalled request was measured at ~8 s.
+_HEDGE_SECONDS = 1.5
+
+# Give up on a line (caller falls back to browser speech) if no model has
+# produced audio by now, or if a started stream goes silent this long.
+_FIRST_AUDIO_TIMEOUT = 10.0
+_STALL_TIMEOUT = 10.0
 
 
 class GeminiTTS:
@@ -56,35 +66,108 @@ class GeminiTTS:
     async def stream(self, text: str) -> AsyncIterator[bytes]:
         """Yield PCM16 chunks for ``text``. Raises if no model produced audio.
 
-        Falls through to the next model only before any audio was yielded, so
-        a listener never hears a line restart.
+        Hedged: if the first model hasn't produced audio within
+        ``_HEDGE_SECONDS``, the next model starts in parallel and whichever
+        speaks first is used (the other is cancelled). A model that errors or
+        loses the race is skipped for ``_COOLDOWN_SECONDS``. Once audio starts
+        there is no switching, so a listener never hears a line restart.
         """
         prompt = f"{settings.tts_style}: {text}" if settings.tts_style else text
         now = time.monotonic()
-        models = [m for m in self._models if now >= self._down_until.get(m, 0.0)] or self._models
-        last_exc: Optional[Exception] = None
-        for model in models:
-            yielded = False
-            try:
-                async for chunk in await self._client.aio.models.generate_content_stream(
-                    model=model, contents=prompt, config=self._config,
-                ):
-                    for part in _parts(chunk):
-                        data = part.inline_data.data if part.inline_data else None
-                        if data:
-                            yielded = True
-                            yield data
-                self._down_until.pop(model, None)
-                if yielded:
+        queue_models = [m for m in self._models if now >= self._down_until.get(m, 0.0)] or list(self._models)
+        racers: list[tuple[str, asyncio.Queue, asyncio.Task]] = []
+
+        def launch() -> bool:
+            if not queue_models:
+                return False
+            model = queue_models.pop(0)
+            q: asyncio.Queue = asyncio.Queue()
+            racers.append((model, q, asyncio.create_task(self._pump(model, prompt, q))))
+            return True
+
+        launch()
+        winner = None
+        first = b""
+        last_exc: Optional[BaseException] = None
+        give_up = time.monotonic() + _FIRST_AUDIO_TIMEOUT
+        try:
+            while winner is None:
+                if not racers and not launch():
+                    raise last_exc or RuntimeError("no TTS model available")
+                remaining = give_up - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError(f"no audio within {_FIRST_AUDIO_TIMEOUT:.0f}s")
+                gets = {asyncio.ensure_future(q.get()): (m, q, t) for m, q, t in racers}
+                hedge = _HEDGE_SECONDS if (len(racers) == 1 and queue_models) else None
+                wait = min(hedge, remaining) if hedge is not None else remaining
+                done, pending = await asyncio.wait(gets, timeout=wait,
+                                                   return_when=asyncio.FIRST_COMPLETED)
+                for g in pending:
+                    g.cancel()
+                if not done and not (hedge is not None and wait == hedge):
+                    continue  # overall deadline reached; the check above raises
+                if not done:
+                    log.info("gemini tts: %s slow to start; hedging with %s",
+                             racers[0][0], queue_models[0])
+                    launch()
+                    continue
+                for g in done:
+                    model, q, task = gets[g]
+                    item = g.result()
+                    if isinstance(item, (bytes, bytearray)) and winner is None:
+                        winner, first = (model, q, task), bytes(item)
+                    elif not isinstance(item, (bytes, bytearray)):
+                        # An error, or the stream ended without any audio.
+                        last_exc = (item if isinstance(item, BaseException)
+                                    else RuntimeError(f"{model} returned no audio"))
+                        self._mark_down(model, last_exc)
+                        racers.remove((model, q, task))
+            model, q, task = winner
+            for other_model, _, other_task in racers:
+                if other_task is not task:
+                    other_task.cancel()
+                    self._mark_down(other_model, RuntimeError("slower than the hedge"))
+            self._down_until.pop(model, None)
+            yield first
+            while True:
+                try:
+                    item = await asyncio.wait_for(q.get(), timeout=_STALL_TIMEOUT)
+                except asyncio.TimeoutError:
+                    raise TimeoutError(f"{model} stalled mid-line") from None
+                if item is _END:
                     return
-                last_exc = RuntimeError(f"{model} returned no audio")
-            except Exception as exc:  # noqa: BLE001
-                if yielded:
-                    raise
-                last_exc = exc
-            self._down_until[model] = time.monotonic() + _COOLDOWN_SECONDS
-            log.warning("gemini tts: %s failed (%s)", model, str(last_exc)[:160])
-        raise last_exc or RuntimeError("no TTS model available")
+                if isinstance(item, BaseException):
+                    raise item
+                yield item
+        finally:
+            # Stop every model stream still running (the winner's too, if the
+            # listener went away mid-line).
+            for _, _, t in racers:
+                t.cancel()
+
+    async def _pump(self, model: str, prompt: str, q: asyncio.Queue) -> None:
+        """Run one model's stream into ``q``: bytes…, then _END or an exception."""
+        try:
+            async for chunk in await self._client.aio.models.generate_content_stream(
+                model=model, contents=prompt, config=self._config,
+            ):
+                for part in _parts(chunk):
+                    data = part.inline_data.data if part.inline_data else None
+                    if data:
+                        await q.put(data)
+            await q.put(_END)
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            await q.put(exc)
+
+    def _mark_down(self, model: str, exc: BaseException) -> None:
+        self._down_until[model] = time.monotonic() + _COOLDOWN_SECONDS
+        log.warning("gemini tts: %s skipped for %ds (%s)", model, _COOLDOWN_SECONDS,
+                    str(exc)[:160])
+
+
+_END = object()
 
 
 def _parts(chunk) -> list:
