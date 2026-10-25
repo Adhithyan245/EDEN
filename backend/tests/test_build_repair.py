@@ -24,9 +24,11 @@ class ScriptLLM:
     def __init__(self, replies: list[dict]) -> None:
         self.replies = list(replies)
         self.prompts: list[str] = []
+        self.intents: list = []
 
     async def stream_reply(self, messages, system, *, model=None, intent=None):
         self.prompts.append(messages[-1]["content"])
+        self.intents.append(intent)
         yield json.dumps(self.replies.pop(0))
 
 
@@ -65,3 +67,16 @@ def test_repair_error_is_sent_back_to_the_model():
 
 def test_one_repair_is_configured():
     assert orch._MAX_BUILD_REPAIRS == 1
+
+
+def test_planners_request_the_large_build_budget():
+    # B03 in eden-bench-v1 failed when the planner got the default 4096-token cap.
+    from app.agents.edit_planner import generate_edit_plan
+    from app.agents.intent import IntentType
+    from app.providers.llm_gemini import _generation_config
+
+    llm = ScriptLLM([GOOD, {"summary": "x", "files": []}])
+    _plan(GOOD, llm=llm)
+    asyncio.run(generate_edit_plan("Counter", "make it blue", {"src/App.jsx": "x"}, llm))
+    assert llm.intents == [IntentType.BUILD, IntentType.BUILD]
+    assert _generation_config(IntentType.BUILD)["max_output_tokens"] >= 16384

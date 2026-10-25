@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from ..config import settings
+from .intent import IntentType
 from ..providers.base import LLMProvider
 from ..utils import extract_json
 
@@ -202,6 +203,8 @@ async def generate_plan(
             [{"role": "user", "content": user_prompt}],
             _PLANNER_SYSTEM,
             model=settings.model_builder,
+            # BUILD gets the large output budget: whole files, JSON-escaped.
+            intent=IntentType.BUILD,
         ):
             raw_parts.append(chunk)
             if len("".join(raw_parts)) > 60000:  # generous; App.jsx + css can be large

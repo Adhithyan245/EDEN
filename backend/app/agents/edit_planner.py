@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from ..config import settings
+from .intent import IntentType
 from ..providers.base import LLMProvider
 from ..utils import extract_json
 
@@ -131,6 +132,8 @@ async def generate_edit_plan(
             [{"role": "user", "content": user_prompt}],
             _EDIT_SYSTEM,
             model=settings.model_builder,
+            # BUILD gets the large output budget: whole files, JSON-escaped.
+            intent=IntentType.BUILD,
         ):
             raw_parts.append(chunk)
             if len("".join(raw_parts)) > 60000:

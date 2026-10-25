@@ -44,7 +44,9 @@ def _generation_config(intent: Optional[IntentType]) -> dict:
 
     if intent == IntentType.BUILD:
         # Deterministic: complete App.jsx + styles without creative drift.
-        return {"max_output_tokens": 4096, "temperature": 0.3}
+        # Whole source files escaped inside JSON are token-dense; 4096 tokens
+        # (~8k chars) truncated larger apps mid-string (eden-bench-v1, B03).
+        return {"max_output_tokens": 16384, "temperature": 0.3}
 
     if intent == IntentType.CONVERSATION:
         # Natural, warm conversational rhythm — short by EDEN's own choice.
