@@ -66,6 +66,9 @@ export type EdenEvent =
   | { type: "reply_done"; text: string }
   | { type: "speak"; text: string }
   | { type: "speech_audio"; audio_b64: string; mime: string }
+  | { type: "speech_stream_start"; id: string; sample_rate: number; text: string }
+  | { type: "speech_chunk"; id: string; seq: number; pcm_b64: string }
+  | { type: "speech_stream_end"; id: string; ok: boolean }
   | { type: "error"; message: string }
   | { type: "pong" }
   // --- structured response (research-aware, narrator-separated) ---

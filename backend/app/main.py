@@ -223,7 +223,8 @@ async def ws(websocket: WebSocket) -> None:
 
 
 def _client_ip(websocket: WebSocket) -> str:
-    return websocket.client.host if websocket.client else "unknown"
+    client = getattr(websocket, "client", None)
+    return getattr(client, "host", None) or "unknown"
 
 
 async def _notice(websocket: WebSocket, text: str) -> None:
@@ -320,6 +321,7 @@ async def _handle_user_message(
     # Everything else falls through to the conversational pipeline.
     # ------------------------------------------------------------------
     detected_intent = None  # carries intent into the conversational pipeline below
+    agent_route = False     # True once a build/edit has been committed to
 
     if settings.agent_enabled and not wake:
         try:
@@ -345,6 +347,7 @@ async def _handle_user_message(
             ))
 
             if decision.route == Route.AGENT and decision.task is not None:
+                agent_route = True
                 if decision.task.intent == TaskIntent.EDIT:
                     # Show the constellation immediately so the audience sees the
                     # build environment before the 5-8 s edit-plan wait.
@@ -397,6 +400,14 @@ async def _handle_user_message(
                 return   # ← skip conversational pipeline for BUILD/EDIT requests
 
         except Exception as exc:  # noqa: BLE001
+            if agent_route:
+                # Never hand a crashed build to the chat model: it would happily
+                # claim the app was built. Say what actually happened.
+                log.exception("agent pipeline crashed")
+                await _notice(websocket, "Something went wrong on my side while I was working "
+                                         "on that, so nothing was built or changed. "
+                                         "Try asking again.")
+                return
             log.warning("agent routing failed (%s); falling back to conversation", exc)
             detected_intent = None  # reset so the fallback path is clean
 

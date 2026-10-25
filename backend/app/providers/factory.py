@@ -42,11 +42,18 @@ def build_llm() -> LLMProvider:
 
 
 def build_tts() -> TTSProvider:
-    use_elevenlabs = (
-        settings.mode != DemoMode.PRESENTATION
-        and settings.voice_enabled
-        and settings.has_elevenlabs
-    )
+    server_voice = settings.mode != DemoMode.PRESENTATION and settings.voice_enabled
+    choice = settings.tts_provider
+    if server_voice and choice in ("auto", "gemini") and settings.has_gemini:
+        try:
+            from .tts_gemini import GeminiTTS  # lazy import
+
+            log.info("TTS -> GeminiTTS (streaming, voice=%s)", settings.tts_voice)
+            return GeminiTTS()
+        except Exception as exc:  # noqa: BLE001
+            log.warning("GeminiTTS init failed (%s); trying the next voice", exc)
+
+    use_elevenlabs = server_voice and choice in ("auto", "elevenlabs") and settings.has_elevenlabs
     if use_elevenlabs:
         try:
             from .tts_elevenlabs import ElevenLabsTTS  # lazy import

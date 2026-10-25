@@ -60,7 +60,11 @@ class LLMProvider(Protocol):
 @runtime_checkable
 class TTSProvider(Protocol):
     name: str
-    engine: Literal["server_audio", "browser"]
+    # server_audio:  synthesize() returns a complete audio file (ElevenLabs MP3)
+    # server_stream: also has ``stream(text)`` yielding PCM16 chunks at
+    #                ``sample_rate`` (Gemini); see voice.py
+    # browser:       the frontend speaks with SpeechSynthesis
+    engine: Literal["server_audio", "server_stream", "browser"]
 
     async def synthesize(self, text: str) -> Optional[bytes]:
         """Return audio bytes for ``server_audio`` engines, or ``None`` to

@@ -115,6 +115,21 @@ def speech_audio(audio_b64: str, mime: str = "audio/mpeg") -> dict[str, Any]:
     return event("speech_audio", audio_b64=audio_b64, mime=mime)
 
 
+def speech_stream_start(stream_id: str, sample_rate: int, text: str) -> dict[str, Any]:
+    """A streamed line begins. PCM16 mono chunks follow as ``speech_chunk``."""
+    return event("speech_stream_start", id=stream_id, sample_rate=sample_rate, text=text)
+
+
+def speech_chunk(stream_id: str, seq: int, pcm_b64: str) -> dict[str, Any]:
+    """One slice of a streamed line: base64 little-endian 16-bit PCM."""
+    return event("speech_chunk", id=stream_id, seq=seq, pcm_b64=pcm_b64)
+
+
+def speech_stream_end(stream_id: str, ok: bool = True) -> dict[str, Any]:
+    """No more chunks for this line. ``ok=False`` means it was cut short."""
+    return event("speech_stream_end", id=stream_id, ok=ok)
+
+
 def emotion(name: str) -> dict[str, Any]:
     """Signal the current emotional state of EDEN for avatar animation."""
     return event("emotion", emotion=name)

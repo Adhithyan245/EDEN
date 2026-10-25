@@ -17,6 +17,7 @@ import sys
 os.environ["EDEN_PORT"] = "65013"
 os.environ["EDEN_MEMORY_ENABLED"] = "false"
 os.environ["EDEN_VOICE_ENABLED"] = "false"
+os.environ["EDEN_AGENT_ENABLED"] = "true"
 
 # Make the backend package importable (tests/ -> backend/).
 _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

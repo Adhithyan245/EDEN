@@ -108,12 +108,20 @@ class GeminiLLM:
             if delay:
                 await asyncio.sleep(delay)
             yielded = False
+            last = i == len(attempts) - 1
             try:
-                async for chunk in await self._client.aio.models.generate_content_stream(
-                    model=attempt_model,
-                    contents=contents,
-                    config=config,
-                ):
+                # An overloaded model sometimes answers without erroring, just
+                # 20 s late. Unless this is the final option, give it a deadline
+                # to start streaming and move on to the next one if it misses.
+                chunks = _first_chunk_deadline(
+                    self._client.aio.models.generate_content_stream(
+                        model=attempt_model,
+                        contents=contents,
+                        config=config,
+                    ),
+                    None if last else _FIRST_CHUNK_TIMEOUT,
+                )
+                async for chunk in chunks:
                     if chunk.text:
                         yielded = True
                         yield chunk.text
@@ -122,7 +130,6 @@ class GeminiLLM:
                     log.info("gemini: served by fallback model %s", attempt_model)
                 return
             except Exception as exc:
-                last = i == len(attempts) - 1
                 if _is_retryable(exc):
                     _BREAKER.failed(attempt_model)
                 if yielded or last or not _is_retryable(exc):
@@ -132,6 +139,38 @@ class GeminiLLM:
                     "gemini: %s on %s (attempt %d/%d) — retrying",
                     _status(exc) or type(exc).__name__, attempt_model, i + 1, len(attempts),
                 )
+
+
+# Seconds a non-final attempt may take to produce its first chunk. Healthy
+# models stream within ~1 s; this only catches a stalled, overloaded one.
+_FIRST_CHUNK_TIMEOUT = 8.0
+
+
+async def _first_chunk_deadline(request, timeout: Optional[float]):
+    """Iterate a streaming request, failing if the first chunk takes too long."""
+    if timeout is None:
+        async for chunk in await request:
+            yield chunk
+        return
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    stream = await asyncio.wait_for(request, timeout=timeout)
+    it = stream.__aiter__()
+    try:
+        first = await asyncio.wait_for(it.__anext__(), timeout=max(0.1, deadline - loop.time()))
+    except StopAsyncIteration:
+        return
+    except asyncio.TimeoutError:
+        aclose = getattr(it, "aclose", None)
+        if aclose:
+            try:
+                await aclose()
+            except Exception:  # noqa: BLE001
+                pass
+        raise
+    yield first
+    async for chunk in it:
+        yield chunk
 
 
 # Primary model is tried twice, then the fallback twice. Delays are seconds

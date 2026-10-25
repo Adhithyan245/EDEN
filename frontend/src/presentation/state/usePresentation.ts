@@ -23,6 +23,7 @@ import { Action, initialState, reduce } from "./presentation";
 export function usePresentation() {
   const [state, dispatch] = useReducer(reduce, initialState);
   const speakingLock = useRef(false);
+  const streamingRef = useRef(false);
 
   const setConnected = useCallback((connected: boolean) => {
     dispatch({ type: "@connected", connected });
@@ -42,6 +43,30 @@ export function usePresentation() {
         });
         return;
       }
+
+      // Streamed speech (Gemini): chunks play as they arrive; the audio
+      // clock, not the backend, decides when EDEN stops speaking.
+      case "speech_stream_start": {
+        speakingLock.current = true;
+        audioBus.resume();
+        dispatch({ type: "state", state: "speaking" });
+        const onEnd = () => {
+          speakingLock.current = false;
+          dispatch({ type: "state", state: "idle" });
+        };
+        streamingRef.current = audioBus.streamStart(ev.sample_rate, { onEnd });
+        // No AudioWorklet in this browser: say the line with the built-in voice.
+        if (!streamingRef.current) speakBrowser(ev.text, { onEnd });
+        return;
+      }
+
+      case "speech_chunk":
+        if (streamingRef.current) audioBus.streamChunk(ev.pcm_b64);
+        return;
+
+      case "speech_stream_end":
+        if (streamingRef.current) audioBus.streamEnd();
+        return;
 
       case "speak": {
         // Legacy TTS path — backend sends the full spoken string directly.

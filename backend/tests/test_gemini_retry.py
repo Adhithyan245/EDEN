@@ -37,6 +37,15 @@ def _llm(script: dict[str, list]) -> tuple[GeminiLLM, list[str]]:
             raise outcome
 
         async def gen():
+            if outcome == "stall":
+                await asyncio.sleep(10)
+                yield _Chunk("too late")
+                return
+            if isinstance(outcome, tuple) and outcome[0] == "slow":
+                await asyncio.sleep(0.05)
+                for t in outcome[1]:
+                    yield _Chunk(t)
+                return
             if isinstance(outcome, tuple):
                 _, texts, exc = outcome
                 for t in texts:
@@ -137,3 +146,18 @@ def test_cooling_primary_is_still_last_resort():
     asyncio.run(_collect(llm, "primary"))
     assert asyncio.run(_collect(llm, "primary")) == "late"
     assert calls[-3:] == ["fallback-model", "fallback-model", "primary"]
+
+
+def test_stalled_model_misses_deadline_and_fallback_answers(monkeypatch):
+    monkeypatch.setattr(llm_gemini, "_FIRST_CHUNK_TIMEOUT", 0.05)
+    llm, calls = _llm({"primary": ["stall", "stall"], "fallback-model": [["quick"]]})
+    assert asyncio.run(_collect(llm, "primary")) == "quick"
+    assert calls == ["primary", "primary", "fallback-model"]
+
+
+def test_final_attempt_has_no_deadline(monkeypatch):
+    monkeypatch.setattr(llm_gemini, "_FIRST_CHUNK_TIMEOUT", 0.01)
+    monkeypatch.setattr(llm_gemini.settings, "model_fallback", None)
+    llm, calls = _llm({"primary": [APIError(503), ("slow", ["ok"])]})
+    # second (final) attempt streams normally even though it's not instant
+    assert asyncio.run(_collect(llm, "primary")) == "ok"

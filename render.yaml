@@ -25,9 +25,12 @@ services:
       # Memory is one shared store; on a public server it would mix visitors.
       - key: EDEN_MEMORY_ENABLED
         value: "false"
-      # Browser speech instead of ElevenLabs, so visitors don't spend credits.
+      # Streamed Gemini voice: natural, ~1 s to first audio, same key (no
+      # ElevenLabs credits). Falls back to browser speech if its quota runs out.
       - key: EDEN_VOICE_ENABLED
-        value: "false"
+        value: "true"
+      - key: EDEN_TTS_PROVIDER
+        value: gemini
       - key: EDEN_USER_NAME
         value: there
       - key: EDEN_MAX_MESSAGES_PER_MINUTE

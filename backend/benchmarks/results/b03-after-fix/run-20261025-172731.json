@@ -1,0 +1,368 @@
+{
+  "benchmark": "eden-bench-v1-b03x3",
+  "run_at": "20261025-172731",
+  "llm": "gemini",
+  "model_voice": "gemini-3.1-flash-lite",
+  "model_builder": "gemini-3.1-flash-lite",
+  "results": [
+    {
+      "id": "B03-1",
+      "build": {
+        "text": "Build a tip calculator with bill amount, tip percentage and number of people that shows the total per person.",
+        "seconds": 95.8,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2350247257040\\Tip_Calculator",
+          "app_name": "Tip Calculator",
+          "task_id": "86e5079a-4905-47db-b96c-8a18531b8c1c",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2350247257040\\Tip_Calculator",
+          "preview_url": "/preview/ZA_6K99VapT8XKbx/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1006,
+            "output_tokens": 113,
+            "total_tokens": 1119,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 316,
+            "output_tokens": 38,
+            "total_tokens": 354,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 37,
+            "total_tokens": 3485,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 883,
+            "output_tokens": 1143,
+            "total_tokens": 2026,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 30,
+            "total_tokens": 3459,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 31,
+            "total_tokens": 3476,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 44,
+            "total_tokens": 3480,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 2,
+        "fallback_served": 0,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.2,
+        "vite_tail": "\n> tip-calculator@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-BtnRMbEl.css  \u001b[39m\u001b[1m\u001b[2m  1.00 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.49 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-3LyiLPKR.js   \u001b[39m\u001b[1m\u001b[2m143.97 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.20 kB\u001b[22m\n\u001b[32m\u2713 built in 839ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B03-2",
+      "build": {
+        "text": "Build a tip calculator with bill amount, tip percentage and number of people that shows the total per person.",
+        "seconds": 44.1,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2350223676624\\Tip_Calculator",
+          "app_name": "Tip Calculator",
+          "task_id": "e63b680c-8068-450d-affe-70cfaf4c5e14",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2350223676624\\Tip_Calculator",
+          "preview_url": "/preview/2oahTEkEMGNzcQML/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1006,
+            "output_tokens": 112,
+            "total_tokens": 1118,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 316,
+            "output_tokens": 37,
+            "total_tokens": 353,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 34,
+            "total_tokens": 3482,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 882,
+            "output_tokens": 2923,
+            "total_tokens": 3805,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 30,
+            "total_tokens": 3459,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 33,
+            "total_tokens": 3478,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 32,
+            "total_tokens": 3468,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 2,
+        "fallback_served": 5,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.4,
+        "vite_tail": "\n> tip-calculator@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-DqWC7nHP.css  \u001b[39m\u001b[1m\u001b[2m  3.17 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.04 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-Bau_pODk.js   \u001b[39m\u001b[1m\u001b[2m145.06 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.52 kB\u001b[22m\n\u001b[32m\u2713 built in 944ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B03-3",
+      "build": {
+        "text": "Build a tip calculator with bill amount, tip percentage and number of people that shows the total per person.",
+        "seconds": 28.6,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2350247991312\\Tip_Calculator",
+          "app_name": "Tip Calculator",
+          "task_id": "3819951f-98a0-40b0-b00c-c9d975d7aae4",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2350247991312\\Tip_Calculator",
+          "preview_url": "/preview/2KvnlJC9OrIIv5go/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1006,
+            "output_tokens": 115,
+            "total_tokens": 1121,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 316,
+            "output_tokens": 37,
+            "total_tokens": 353,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 34,
+            "total_tokens": 3482,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 882,
+            "output_tokens": 2826,
+            "total_tokens": 3708,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 35,
+            "total_tokens": 3464,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 33,
+            "total_tokens": 3478,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 46,
+            "total_tokens": 3482,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 7,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.6,
+        "vite_tail": "\n> tip-calculator@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-4ynY54II.css  \u001b[39m\u001b[1m\u001b[2m  3.19 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.03 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-EPv68ItL.js   \u001b[39m\u001b[1m\u001b[2m144.91 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.50 kB\u001b[22m\n\u001b[32m\u2713 built in 923ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      }
+    }
+  ]
+}

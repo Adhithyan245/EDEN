@@ -1,0 +1,1962 @@
+{
+  "benchmark": "eden-bench-v1",
+  "run_at": "20261025-172104",
+  "llm": "gemini",
+  "model_voice": "gemini-3.1-flash-lite",
+  "model_builder": "gemini-3.1-flash-lite",
+  "results": [
+    {
+      "id": "B01",
+      "build": {
+        "text": "Build a counter app with increment, decrement and reset buttons.",
+        "seconds": 65.8,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330292723792\\Counter_App",
+          "app_name": "Counter App",
+          "task_id": "4d94f4ee-ea16-43ef-9127-2ffdfe0eb726",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330292723792\\Counter_App",
+          "preview_url": "/preview/wAwwVqouOQfnOrGZ/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 997,
+            "output_tokens": 101,
+            "total_tokens": 1098,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 298,
+            "output_tokens": 39,
+            "total_tokens": 337,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 31,
+            "total_tokens": 3479,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 864,
+            "output_tokens": 2946,
+            "total_tokens": 3810,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 38,
+            "total_tokens": 3467,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 33,
+            "total_tokens": 3478,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 47,
+            "total_tokens": 3483,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 2,
+        "fallback_served": 6,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.3,
+        "vite_tail": "\n> counter-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-CItLBN21.css  \u001b[39m\u001b[1m\u001b[2m  3.47 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.15 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-p-4pksd-.js   \u001b[39m\u001b[1m\u001b[2m144.72 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.55 kB\u001b[22m\n\u001b[32m\u2713 built in 1.02s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      },
+      "edit": {
+        "text": "Make the counter stop at zero so it can never go negative.",
+        "seconds": 14.6,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "edit_complete",
+          "edit_started",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "edit",
+        "build_complete": null,
+        "build_failed": null,
+        "edit_complete": {
+          "type": "edit_complete",
+          "task_id": "8c3bf587-48e6-45ed-8632-0472542547e7",
+          "app_name": "Counter App",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330292723792\\Counter_App",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330292723792\\Counter_App",
+          "files": [
+            "src/App.jsx",
+            "src/styles.css"
+          ],
+          "preview_url": "/preview/wAwwVqouOQfnOrGZ/"
+        },
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1075,
+            "output_tokens": 96,
+            "total_tokens": 1171,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3435,
+            "output_tokens": 23,
+            "total_tokens": 3458,
+            "error": null
+          },
+          {
+            "phase": "agents.edit_planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3343,
+            "output_tokens": 3094,
+            "total_tokens": 6437,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3419,
+            "output_tokens": 35,
+            "total_tokens": 3454,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3427,
+            "output_tokens": 25,
+            "total_tokens": 3452,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 5,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.4,
+        "vite_tail": "\n> counter-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-Blajn5vc.css  \u001b[39m\u001b[1m\u001b[2m  3.56 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.19 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-_aUQ0jxn.js   \u001b[39m\u001b[1m\u001b[2m144.79 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.59 kB\u001b[22m\n\u001b[32m\u2713 built in 1.26s\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      }
+    },
+    {
+      "id": "B02",
+      "build": {
+        "text": "Build a todo list app where I can add tasks, mark them complete, and delete them.",
+        "seconds": 31.9,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293459024\\Todo_List_App",
+          "app_name": "Todo List App",
+          "task_id": "2a048da8-0c7d-4fae-8cfe-02854c950ec4",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293459024\\Todo_List_App",
+          "preview_url": "/preview/psqWeMj6iLNmNvQH/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1004,
+            "output_tokens": 105,
+            "total_tokens": 1109,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 306,
+            "output_tokens": 45,
+            "total_tokens": 351,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3449,
+            "output_tokens": 31,
+            "total_tokens": 3480,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 874,
+            "output_tokens": 3382,
+            "total_tokens": 4256,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 33,
+            "total_tokens": 3462,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3446,
+            "output_tokens": 35,
+            "total_tokens": 3481,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3437,
+            "output_tokens": 52,
+            "total_tokens": 3489,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 7,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.0,
+        "vite_tail": "\n> todo-list-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-B2YmAqyU.css  \u001b[39m\u001b[1m\u001b[2m  3.84 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.22 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-zY7O0dQM.js   \u001b[39m\u001b[1m\u001b[2m145.24 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.76 kB\u001b[22m\n\u001b[32m\u2713 built in 1.22s\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      },
+      "edit": {
+        "text": "Add filter buttons to show all, active, or completed tasks.",
+        "seconds": 17.5,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "edit_complete",
+          "edit_started",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "edit",
+        "build_complete": null,
+        "build_failed": null,
+        "edit_complete": {
+          "type": "edit_complete",
+          "task_id": "7765c60c-6332-48f4-9c5a-5ea3199b300e",
+          "app_name": "Todo List App",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293459024\\Todo_List_App",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293459024\\Todo_List_App",
+          "files": [
+            "src/App.jsx",
+            "src/styles.css"
+          ],
+          "preview_url": "/preview/psqWeMj6iLNmNvQH/"
+        },
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1079,
+            "output_tokens": 98,
+            "total_tokens": 1177,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 27,
+            "total_tokens": 3463,
+            "error": null
+          },
+          {
+            "phase": "agents.edit_planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3753,
+            "output_tokens": 3404,
+            "total_tokens": 7157,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3419,
+            "output_tokens": 35,
+            "total_tokens": 3454,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3428,
+            "output_tokens": 20,
+            "total_tokens": 3448,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 2,
+        "fallback_served": 5,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.7,
+        "vite_tail": "\n> todo-list-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-B2YmAqyU.css  \u001b[39m\u001b[1m\u001b[2m  3.84 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.22 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-zY7O0dQM.js   \u001b[39m\u001b[1m\u001b[2m145.24 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.76 kB\u001b[22m\n\u001b[32m\u2713 built in 1.14s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B03",
+      "build": {
+        "text": "Build a tip calculator with bill amount, tip percentage and number of people that shows the total per person.",
+        "seconds": 21.8,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_failed",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": null,
+        "build_failed": {
+          "type": "build_failed",
+          "reason": "the design could not be generated",
+          "used_fallback": false,
+          "task_id": "92975942-5e8e-404a-aed8-aad8f9ed4d56"
+        },
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1006,
+            "output_tokens": 115,
+            "total_tokens": 1121,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 316,
+            "output_tokens": 38,
+            "total_tokens": 354,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 34,
+            "total_tokens": 3482,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 883,
+            "output_tokens": 4092,
+            "total_tokens": 4975,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 908,
+            "output_tokens": 4092,
+            "total_tokens": 5000,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3432,
+            "output_tokens": 42,
+            "total_tokens": 3474,
+            "error": null
+          }
+        ],
+        "repair_attempted": true,
+        "rejections": [
+          "eden.agents.orchestrator: build generation rejected (attempt 1): the design could not be generated",
+          "eden.agents.orchestrator: build generation rejected (attempt 2): the design could not be generated"
+        ],
+        "transient_retries": 0,
+        "fallback_served": 6,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": false,
+        "pass": false,
+        "infra_error": false
+      }
+    },
+    {
+      "id": "B04",
+      "build": {
+        "text": "Build a stopwatch app with start, stop, lap and reset buttons and a list of lap times.",
+        "seconds": 30.7,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294352208\\Stopwatch_App",
+          "app_name": "Stopwatch App",
+          "task_id": "97071f24-b064-4a24-8f8c-ddaa5b12f53e",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294352208\\Stopwatch_App",
+          "preview_url": "/preview/GnSmySQK-a5UvBFQ/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1005,
+            "output_tokens": 126,
+            "total_tokens": 1131,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 310,
+            "output_tokens": 41,
+            "total_tokens": 351,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 33,
+            "total_tokens": 3481,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 876,
+            "output_tokens": 3172,
+            "total_tokens": 4048,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 43,
+            "total_tokens": 3472,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 25,
+            "total_tokens": 3470,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 41,
+            "total_tokens": 3477,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 7,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.2,
+        "vite_tail": "\n> stopwatch-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-Ct9oxZKt.css  \u001b[39m\u001b[1m\u001b[2m  3.26 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.12 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-CDjKAw_v.js   \u001b[39m\u001b[1m\u001b[2m145.01 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.59 kB\u001b[22m\n\u001b[32m\u2713 built in 879ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      },
+      "edit": {
+        "text": "Change the colour scheme to a light theme with dark text.",
+        "seconds": 24.6,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "edit_complete",
+          "edit_started",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "edit",
+        "build_complete": null,
+        "build_failed": null,
+        "edit_complete": {
+          "type": "edit_complete",
+          "task_id": "b1fa6495-1112-42c2-9c97-1225492fc738",
+          "app_name": "Stopwatch App",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294352208\\Stopwatch_App",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294352208\\Stopwatch_App",
+          "files": [
+            "src/styles.css"
+          ],
+          "preview_url": "/preview/GnSmySQK-a5UvBFQ/"
+        },
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1076,
+            "output_tokens": 97,
+            "total_tokens": 1173,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3434,
+            "output_tokens": 23,
+            "total_tokens": 3457,
+            "error": null
+          },
+          {
+            "phase": "agents.edit_planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3560,
+            "output_tokens": 1884,
+            "total_tokens": 5444,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3419,
+            "output_tokens": 28,
+            "total_tokens": 3447,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3427,
+            "output_tokens": 29,
+            "total_tokens": 3456,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 5,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.6,
+        "vite_tail": "\n> stopwatch-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-B8vUJ6Rq.css  \u001b[39m\u001b[1m\u001b[2m  3.27 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.10 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BJ1PalJX.js   \u001b[39m\u001b[1m\u001b[2m145.01 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.59 kB\u001b[22m\n\u001b[32m\u2713 built in 963ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      }
+    },
+    {
+      "id": "B05",
+      "build": {
+        "text": "Build a Pomodoro timer with 25 minute work sessions and 5 minute breaks, with start, pause and reset.",
+        "seconds": 71.2,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294061904\\Pomodoro_Timer",
+          "app_name": "Pomodoro Timer",
+          "task_id": "b1e58ebb-4ff5-4f35-a52c-aa1add31b5e4",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294061904\\Pomodoro_Timer",
+          "preview_url": "/preview/M7qJUhToRpHG8ZUO/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1010,
+            "output_tokens": 117,
+            "total_tokens": 1127,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 323,
+            "output_tokens": 39,
+            "total_tokens": 362,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3449,
+            "output_tokens": 43,
+            "total_tokens": 3492,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 890,
+            "output_tokens": 1347,
+            "total_tokens": 2237,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 36,
+            "total_tokens": 3465,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3446,
+            "output_tokens": 33,
+            "total_tokens": 3479,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3437,
+            "output_tokens": 39,
+            "total_tokens": 3476,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 2,
+        "fallback_served": 3,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 5.2,
+        "vite_tail": "\n> pomodoro-timer@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-sH4goL7D.css  \u001b[39m\u001b[1m\u001b[2m  1.14 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.53 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BPGzZ86U.js   \u001b[39m\u001b[1m\u001b[2m143.69 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.20 kB\u001b[22m\n\u001b[32m\u2713 built in 3.72s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B06",
+      "build": {
+        "text": "Build a unit converter app that converts kilometres to miles and Celsius to Fahrenheit.",
+        "seconds": 31.7,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294074320\\Unit_Converter",
+          "app_name": "Unit Converter",
+          "task_id": "efad2998-4354-4398-97f9-f6ffe7fd3f10",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294074320\\Unit_Converter",
+          "preview_url": "/preview/cSR6AikxaG1mTbf0/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1000,
+            "output_tokens": 104,
+            "total_tokens": 1104,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 303,
+            "output_tokens": 40,
+            "total_tokens": 343,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 33,
+            "total_tokens": 3481,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 870,
+            "output_tokens": 3758,
+            "total_tokens": 4628,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 35,
+            "total_tokens": 3464,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 34,
+            "total_tokens": 3479,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 30,
+            "total_tokens": 3466,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 7,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.4,
+        "vite_tail": "\n> unit-converter@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-DYO4Aar1.css  \u001b[39m\u001b[1m\u001b[2m  3.39 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.08 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BBCihd5v.js   \u001b[39m\u001b[1m\u001b[2m146.75 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.93 kB\u001b[22m\n\u001b[32m\u2713 built in 1.02s\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      }
+    },
+    {
+      "id": "B07",
+      "build": {
+        "text": "Build a random quote generator app with ten built-in quotes and a new quote button.",
+        "seconds": 29.2,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294061456\\Random_Quote_Generator",
+          "app_name": "Random Quote Generator",
+          "task_id": "3a74fa8d-5ab1-47bf-9933-be136568c017",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294061456\\Random_Quote_Generator",
+          "preview_url": "/preview/UV0p4oxG0BFnG2YM/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1003,
+            "output_tokens": 104,
+            "total_tokens": 1107,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 305,
+            "output_tokens": 39,
+            "total_tokens": 344,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3449,
+            "output_tokens": 32,
+            "total_tokens": 3481,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 873,
+            "output_tokens": 3014,
+            "total_tokens": 3887,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 32,
+            "total_tokens": 3461,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3446,
+            "output_tokens": 32,
+            "total_tokens": 3478,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3437,
+            "output_tokens": 46,
+            "total_tokens": 3483,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 0,
+        "fallback_served": 7,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.2,
+        "vite_tail": "\n> random-quote-generator@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.41 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-DnVs9OjA.css  \u001b[39m\u001b[1m\u001b[2m  3.24 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.05 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BmOoRo12.js   \u001b[39m\u001b[1m\u001b[2m145.24 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.94 kB\u001b[22m\n\u001b[32m\u2713 built in 879ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      }
+    },
+    {
+      "id": "B08",
+      "build": {
+        "text": "Build a two-player tic-tac-toe game that announces the winner and has a restart button.",
+        "seconds": 47.7,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294470416\\Tic-Tac-Toe",
+          "app_name": "Tic-Tac-Toe",
+          "task_id": "77752297-b1df-4989-bb33-eed7f6a09f13",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294470416\\Tic-Tac-Toe",
+          "preview_url": "/preview/v_qZI-SHKt-RnwPl/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1006,
+            "output_tokens": 115,
+            "total_tokens": 1121,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 309,
+            "output_tokens": 46,
+            "total_tokens": 355,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3451,
+            "output_tokens": 35,
+            "total_tokens": 3486,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 882,
+            "output_tokens": 3154,
+            "total_tokens": 4036,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 38,
+            "total_tokens": 3467,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 36,
+            "total_tokens": 3484,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3439,
+            "output_tokens": 37,
+            "total_tokens": 3476,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 1,
+        "fallback_served": 5,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.9,
+        "vite_tail": "\n> tic-tac-toe@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-LY2z1rY6.css  \u001b[39m\u001b[1m\u001b[2m  3.02 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.98 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BKpFP3QL.js   \u001b[39m\u001b[1m\u001b[2m144.71 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.58 kB\u001b[22m\n\u001b[32m\u2713 built in 1.06s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      },
+      "edit": {
+        "text": "Add a scoreboard that keeps track of how many games X and O have won.",
+        "seconds": 164.0,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "edit_complete",
+          "edit_started",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "edit",
+        "build_complete": null,
+        "build_failed": null,
+        "edit_complete": {
+          "type": "edit_complete",
+          "task_id": "f101078c-1942-4190-a6ae-1fc5772130b6",
+          "app_name": "Tic-Tac-Toe",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294470416\\Tic-Tac-Toe",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294470416\\Tic-Tac-Toe",
+          "files": [
+            "src/App.jsx"
+          ],
+          "preview_url": "/preview/v_qZI-SHKt-RnwPl/"
+        },
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1087,
+            "output_tokens": 107,
+            "total_tokens": 1194,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3441,
+            "output_tokens": 30,
+            "total_tokens": 3471,
+            "error": null
+          },
+          {
+            "phase": "agents.edit_planner",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3553,
+            "output_tokens": 1322,
+            "total_tokens": 4875,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3419,
+            "output_tokens": 38,
+            "total_tokens": 3457,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3430,
+            "output_tokens": 30,
+            "total_tokens": 3460,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 1,
+        "fallback_served": 0,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.1,
+        "vite_tail": "\n> tic-tac-toe@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-LY2z1rY6.css  \u001b[39m\u001b[1m\u001b[2m  3.02 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.98 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-CRBqop6O.js   \u001b[39m\u001b[1m\u001b[2m144.72 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.58 kB\u001b[22m\n\u001b[32m\u2713 built in 820ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B09",
+      "build": {
+        "text": "Build a notes app where I can add a note with a title and body, see all my notes in a list, and delete them.",
+        "seconds": 117.6,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294125392\\Notes_App",
+          "app_name": "Notes App",
+          "task_id": "f0095a34-5875-4027-807f-b55b929123fa",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294125392\\Notes_App",
+          "preview_url": "/preview/6Pi4xfFQBsYl61rV/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1013,
+            "output_tokens": 107,
+            "total_tokens": 1120,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 321,
+            "output_tokens": 41,
+            "total_tokens": 362,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 40,
+            "total_tokens": 3488,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 887,
+            "output_tokens": 1351,
+            "total_tokens": 2238,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 33,
+            "total_tokens": 3462,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 43,
+            "total_tokens": 3488,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 43,
+            "total_tokens": 3479,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 1,
+        "fallback_served": 0,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.1,
+        "vite_tail": "\n> notes-app@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-CQIhr5kL.css  \u001b[39m\u001b[1m\u001b[2m  1.41 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.60 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-55wFezn-.js   \u001b[39m\u001b[1m\u001b[2m143.93 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.32 kB\u001b[22m\n\u001b[32m\u2713 built in 1.04s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B10",
+      "build": {
+        "text": "Build a password strength checker app that shows a strength meter and tips for improving the password.",
+        "seconds": 35.7,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293960080\\Password_Strength_Checker",
+          "app_name": "Password Strength Checker",
+          "task_id": "34b3ffbf-da50-4b5a-841f-969a2a4db929",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293960080\\Password_Strength_Checker",
+          "preview_url": "/preview/1Y0bKonHRKGfG2hu/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1003,
+            "output_tokens": 103,
+            "total_tokens": 1106,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 304,
+            "output_tokens": 40,
+            "total_tokens": 344,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3449,
+            "output_tokens": 31,
+            "total_tokens": 3480,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 873,
+            "output_tokens": 2985,
+            "total_tokens": 3858,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 44,
+            "total_tokens": 3473,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3446,
+            "output_tokens": 35,
+            "total_tokens": 3481,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3437,
+            "output_tokens": 38,
+            "total_tokens": 3475,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 2,
+        "fallback_served": 7,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.4,
+        "vite_tail": "\n> password-strength-checker@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.41 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.28 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-b88gClzc.css  \u001b[39m\u001b[1m\u001b[2m  2.94 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.09 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BnZvQ3I7.js   \u001b[39m\u001b[1m\u001b[2m145.04 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.84 kB\u001b[22m\n\u001b[32m\u2713 built in 1.03s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B11",
+      "build": {
+        "text": "Build a BMI calculator app that takes height in centimetres and weight in kilograms and shows the BMI category.",
+        "seconds": 47.4,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294315536\\BMI_Calculator",
+          "app_name": "BMI Calculator",
+          "task_id": "699c687e-dcc8-459c-9bb6-0469d2c040c8",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294315536\\BMI_Calculator",
+          "preview_url": "/preview/glMQrCcXXLsZv2ld/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1005,
+            "output_tokens": 111,
+            "total_tokens": 1116,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 311,
+            "output_tokens": 37,
+            "total_tokens": 348,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3448,
+            "output_tokens": 32,
+            "total_tokens": 3480,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 878,
+            "output_tokens": 4092,
+            "total_tokens": 4970,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 903,
+            "output_tokens": 3086,
+            "total_tokens": 3989,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 23,
+            "total_tokens": 3452,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3445,
+            "output_tokens": 32,
+            "total_tokens": 3477,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3436,
+            "output_tokens": 42,
+            "total_tokens": 3478,
+            "error": null
+          }
+        ],
+        "repair_attempted": true,
+        "rejections": [
+          "eden.agents.orchestrator: build generation rejected (attempt 1): the design could not be generated"
+        ],
+        "transient_retries": 0,
+        "fallback_served": 8,
+        "validation_logs": [],
+        "llm_errors": [],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.1,
+        "vite_tail": "\n> bmi-calculator@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-B1fEstMg.css  \u001b[39m\u001b[1m\u001b[2m  3.34 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.05 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-ytELhPGh.js   \u001b[39m\u001b[1m\u001b[2m145.23 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.80 kB\u001b[22m\n\u001b[32m\u2713 built in 1.24s\u001b[39m\n",
+        "pass": true,
+        "infra_error": false
+      },
+      "edit": {
+        "text": "Add a toggle to switch between metric and imperial units, using pounds and inches.",
+        "seconds": 36.6,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "edit_complete",
+          "edit_started",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "edit",
+        "build_complete": null,
+        "build_failed": null,
+        "edit_complete": {
+          "type": "edit_complete",
+          "task_id": "1f03f28a-f86f-4cee-be6e-dff77de2e997",
+          "app_name": "BMI Calculator",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294315536\\BMI_Calculator",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330294315536\\BMI_Calculator",
+          "files": [
+            "src/App.jsx",
+            "src/styles.css"
+          ],
+          "preview_url": "/preview/glMQrCcXXLsZv2ld/"
+        },
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 1079,
+            "output_tokens": 103,
+            "total_tokens": 1182,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3438,
+            "output_tokens": 29,
+            "total_tokens": 3467,
+            "error": null
+          },
+          {
+            "phase": "agents.edit_planner",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3462,
+            "output_tokens": 3722,
+            "total_tokens": 7184,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.5-flash-lite",
+            "prompt_tokens": 3419,
+            "output_tokens": 28,
+            "total_tokens": 3447,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3427,
+            "output_tokens": 33,
+            "total_tokens": 3460,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 1,
+        "fallback_served": 4,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.5,
+        "vite_tail": "\n> bmi-calculator@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-DMDW7bHA.css  \u001b[39m\u001b[1m\u001b[2m  3.74 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  1.12 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-ClWTN9Hc.js   \u001b[39m\u001b[1m\u001b[2m145.81 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 47.00 kB\u001b[22m\n\u001b[32m\u2713 built in 898ms\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    },
+    {
+      "id": "B12",
+      "build": {
+        "text": "Build a flashcard app with five built-in cards where I can flip a card to see the answer and go to the next or previous card.",
+        "seconds": 68.3,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "build_complete",
+          "build_started",
+          "emotion",
+          "plan_ready",
+          "reply_done",
+          "speak",
+          "state",
+          "suggestion",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "build",
+        "build_complete": {
+          "type": "build_complete",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293149840\\Flashcard_Master",
+          "app_name": "Flashcard Master",
+          "task_id": "08395c0b-dcd8-40a9-a042-d4a7e5675a7b",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293149840\\Flashcard_Master",
+          "preview_url": "/preview/Sp6MOXQC8dFCOrDI/"
+        },
+        "build_failed": null,
+        "edit_complete": null,
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1015,
+            "output_tokens": 119,
+            "total_tokens": 1134,
+            "error": null
+          },
+          {
+            "phase": "agents.clarification",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 327,
+            "output_tokens": 37,
+            "total_tokens": 364,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3449,
+            "output_tokens": 40,
+            "total_tokens": 3489,
+            "error": null
+          },
+          {
+            "phase": "agents.planner",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 896,
+            "output_tokens": 1341,
+            "total_tokens": 2237,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3429,
+            "output_tokens": 44,
+            "total_tokens": 3473,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3446,
+            "output_tokens": 39,
+            "total_tokens": 3485,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3437,
+            "output_tokens": 41,
+            "total_tokens": 3478,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 1,
+        "fallback_served": 0,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 3.9,
+        "vite_tail": "\n> flashcard-master@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-9lWRCyWx.css  \u001b[39m\u001b[1m\u001b[2m  1.21 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.57 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-5WsQ_f3f.js   \u001b[39m\u001b[1m\u001b[2m143.91 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.27 kB\u001b[22m\n\u001b[32m\u2713 built in 1.48s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      },
+      "edit": {
+        "text": "Add a shuffle button that randomises the card order.",
+        "seconds": 35.5,
+        "error": null,
+        "event_types": [
+          "agent_routing",
+          "edit_complete",
+          "edit_started",
+          "emotion",
+          "reply_done",
+          "speak",
+          "state",
+          "task_created",
+          "task_updated",
+          "token",
+          "tool_called",
+          "tool_result"
+        ],
+        "route": "agent",
+        "intent": "edit",
+        "build_complete": null,
+        "build_failed": null,
+        "edit_complete": {
+          "type": "edit_complete",
+          "task_id": "ef6f0540-107a-4e34-b653-5f473b6fdbf6",
+          "app_name": "Flashcard Master",
+          "workspace": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293149840\\Flashcard_Master",
+          "url": "C:\\Users\\ADHITH~1\\AppData\\Local\\Temp\\eden_builds\\2330293149840\\Flashcard_Master",
+          "files": [
+            "src/App.jsx"
+          ],
+          "preview_url": "/preview/Sp6MOXQC8dFCOrDI/"
+        },
+        "edit_failed": null,
+        "clarification": null,
+        "llm_calls": [
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+            "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+          },
+          {
+            "phase": "agents.intent",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1077,
+            "output_tokens": 96,
+            "total_tokens": 1173,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3434,
+            "output_tokens": 36,
+            "total_tokens": 3470,
+            "error": null
+          },
+          {
+            "phase": "agents.edit_planner",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 1805,
+            "output_tokens": 701,
+            "total_tokens": 2506,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3419,
+            "output_tokens": 39,
+            "total_tokens": 3458,
+            "error": null
+          },
+          {
+            "phase": "agents.narrator",
+            "model": "gemini-3.1-flash-lite",
+            "prompt_tokens": 3428,
+            "output_tokens": 33,
+            "total_tokens": 3461,
+            "error": null
+          }
+        ],
+        "repair_attempted": false,
+        "rejections": [],
+        "transient_retries": 1,
+        "fallback_served": 0,
+        "validation_logs": [],
+        "llm_errors": [
+          "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+        ],
+        "vite_build_ok": true,
+        "vite_build_seconds": 2.6,
+        "vite_tail": "\n> flashcard-master@0.1.0 build\n> vite build\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m\u2713\u001b[39m 31 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.27 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-9lWRCyWx.css  \u001b[39m\u001b[1m\u001b[2m  1.21 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip:  0.57 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-Lgxcs3B2.js   \u001b[39m\u001b[1m\u001b[2m144.03 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m \u2502 gzip: 46.32 kB\u001b[22m\n\u001b[32m\u2713 built in 1.10s\u001b[39m\n",
+        "pass": true,
+        "infra_error": true
+      }
+    }
+  ]
+}

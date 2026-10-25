@@ -65,6 +65,19 @@ class Settings:
         self.elevenlabs_api_key = _env("ELEVENLABS_API_KEY")
         self.elevenlabs_voice_id = _env("ELEVENLABS_VOICE_ID", "JBFqnCBsd6RMkjVDRZzb")
         self.voice_enabled = _bool("EDEN_VOICE_ENABLED", True)
+        # Which server voice to use when voice is enabled:
+        #   auto (default) -> gemini if GEMINI_API_KEY, else elevenlabs if its key, else browser
+        #   gemini | elevenlabs | browser
+        self.tts_provider = (_env("EDEN_TTS_PROVIDER", "auto") or "auto").lower()
+        # 3.1-preview: first audio ~0.65 s and ~3.5x real time, consistently.
+        # 3.8 was as fast when fresh but streamed slower than real time once its
+        # free-tier quota was hit (measured 2026-10-25), so it's the fallback.
+        self.tts_model = _env("EDEN_TTS_MODEL", "gemini-3.1-flash-tts-preview")
+        self.tts_model_fallback = _env("EDEN_TTS_MODEL_FALLBACK", "gemini-3.8-flash-tts")
+        self.tts_voice = _env("EDEN_TTS_VOICE", "Achird")
+        # Spoken-style direction. Keep it short and "Say ..." shaped; longer
+        # instructions get read aloud by the model.
+        self.tts_style = _env("EDEN_TTS_STYLE", "Say in a relaxed, warm, conversational way")
 
         # Agent subsystem
         self.agent_enabled = _bool("EDEN_AGENT_ENABLED", False)

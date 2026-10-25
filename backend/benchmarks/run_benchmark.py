@@ -20,7 +20,7 @@ Differences from a live session, by design:
     any other process listening on EDEN_PORT.
 
 Usage (from backend/):
-    ../.venv/Scripts/python.exe benchmarks/run_benchmark.py [--only B01,B02] [--pause 12]
+    ../.venv/Scripts/python.exe benchmarks/run_benchmark.py [--only B01,B02] [--pause 12] [--tasks file.json]
 """
 
 from __future__ import annotations
@@ -203,9 +203,10 @@ async def main() -> None:
     ap.add_argument("--pause", type=float, default=12.0,
                     help="seconds between turns, to stay under free-tier rate limits")
     ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--tasks", default=str(HERE / "tasks.json"))
     args = ap.parse_args()
 
-    spec = json.loads((HERE / "tasks.json").read_text(encoding="utf-8"))
+    spec = json.loads(Path(args.tasks).read_text(encoding="utf-8"))
     only = {s.strip() for s in args.only.split(",") if s.strip()}
     tasks = [t for t in spec["tasks"] if not only or t["id"] in only]
 
