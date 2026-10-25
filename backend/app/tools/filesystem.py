@@ -15,6 +15,21 @@ from .base import ToolResult
 log = logging.getLogger("eden.tools.filesystem")
 
 
+def resolve_within(root: Path, relative: str) -> Optional[Path]:
+    """Resolve ``relative`` under ``root``, or None if it would escape ``root``.
+
+    Guards LLM-supplied paths: rejects absolute paths, drive letters, and any
+    ``..`` traversal that lands outside the workspace.
+    """
+    if not relative or Path(relative).is_absolute() or Path(relative).drive:
+        return None
+    base = root.resolve()
+    target = (base / relative).resolve()
+    if target != base and base not in target.parents:
+        return None
+    return target
+
+
 async def create_directory(path: Path) -> ToolResult:
     """Create a directory (including all parents) if it does not already exist."""
     try:

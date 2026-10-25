@@ -37,6 +37,7 @@ export interface PresentationState {
   pulseId: number;                // increments to fire a new pulse
   clarify: string | null;         // pending clarification question
   suggestion: string | null;      // gentle proactive suggestion
+  preview: { url: string; appName: string | null; version: number } | null; // compiled app
   meta: { mode: string; llm: string; tts: string };
   // --- structured response fields (additive; do not replace caption system) ---
   responseMode: ResponseMode;     // category of the last completed response
@@ -60,6 +61,7 @@ export const initialState: PresentationState = {
   pulseId: 0,
   clarify: null,
   suggestion: null,
+  preview: null,
   meta: { mode: "—", llm: "—", tts: "—" },
   responseMode: "chat",
   displayResponse: "",
@@ -88,13 +90,14 @@ const BUILD_PHASES: Phase[] = [
   { id: "planning", label: "Planning", status: "pending" },
   { id: "files", label: "Creating files", status: "pending" },
   { id: "install", label: "Installing packages", status: "pending" },
-  { id: "launch", label: "Launching", status: "pending" },
+  { id: "compile", label: "Compiling", status: "pending" },
   { id: "verify", label: "Verifying", status: "pending" },
   { id: "done", label: "Ready", status: "pending" },
 ];
 
 const EDIT_PHASES: Phase[] = [
   { id: "edit", label: "Applying change", status: "pending" },
+  { id: "compile", label: "Compiling", status: "pending" },
   { id: "verify", label: "Verifying", status: "pending" },
   { id: "done", label: "Ready", status: "pending" },
 ];
@@ -267,7 +270,6 @@ export function reduce(state: PresentationState, action: Action): PresentationSt
     case "tool_called": {
       if (!state.building) return state;
       const cmd = String((action.args as Record<string, unknown>)?.command ?? "").toLowerCase();
-      const bg = Boolean((action.args as Record<string, unknown>)?.background);
       let phases = state.phases;
       if (action.tool === "create_directory" || action.tool === "create_file") {
         phases = advanceTo(phases, "files");
@@ -275,7 +277,7 @@ export function reduce(state: PresentationState, action: Action): PresentationSt
         phases = advanceTo(phases, "edit");
       } else if (action.tool === "run_command") {
         if (cmd.includes("install")) phases = advanceTo(phases, "install");
-        else if (bg || cmd.includes("run dev") || cmd.includes("vite")) phases = advanceTo(phases, "launch");
+        else if (cmd.includes("run build")) phases = advanceTo(phases, "compile");
       } else if (action.tool === "open_browser") {
         phases = advanceTo(phases, "verify");
       }
@@ -308,7 +310,12 @@ export function reduce(state: PresentationState, action: Action): PresentationSt
     case "build_complete":
     case "edit_complete":
       return firePulse(
-        { ...state, phases: allDone(state.phases), emotion: "happy" },
+        {
+          ...state,
+          phases: allDone(state.phases),
+          emotion: "happy",
+          preview: withPreview(state, action.preview_url, action.app_name),
+        },
         "success",
       );
 
@@ -317,7 +324,10 @@ export function reduce(state: PresentationState, action: Action): PresentationSt
       return firePulse({ ...state, phases: failActive(state.phases), emotion: "concerned" }, "concern");
 
     case "version_restored":
-      return firePulse({ ...state, suggestion: null }, "success");
+      return firePulse(
+        { ...state, suggestion: null, preview: withPreview(state, action.preview_url, state.appName) },
+        "success",
+      );
 
     case "clarification_requested":
       return { ...awaken(state), clarify: action.question };
@@ -333,6 +343,16 @@ export function reduce(state: PresentationState, action: Action): PresentationSt
     default:
       return state;
   }
+}
+
+/** The new preview link, bumping `version` so the browser reloads it. */
+function withPreview(
+  state: PresentationState,
+  url: string | null | undefined,
+  appName: string | null,
+): PresentationState["preview"] {
+  if (!url) return state.preview;
+  return { url, appName, version: (state.preview?.version ?? 0) + 1 };
 }
 
 /** Called on each `state: idle` to retire a finished build environment. */

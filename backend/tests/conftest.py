@@ -11,6 +11,13 @@ from __future__ import annotations
 import os
 import sys
 
+# Importing app.main force-kills any other process listening on EDEN_PORT
+# (tools/portguard.py) and opens the memory store. Point both somewhere
+# harmless before any test imports it; real env vars win over backend/.env.
+os.environ["EDEN_PORT"] = "65013"
+os.environ["EDEN_MEMORY_ENABLED"] = "false"
+os.environ["EDEN_VOICE_ENABLED"] = "false"
+
 # Make the backend package importable (tests/ -> backend/).
 _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _BACKEND_DIR not in sys.path:

@@ -173,11 +173,14 @@ async def generate_plan(
     features:     list[str],
     llm:          LLMProvider,
     workspace:    Optional[Path] = None,
+    repair_error: Optional[str] = None,
 ) -> Optional[Plan]:
     """Generate a Plan for a build request, or None if generation fails.
 
     Uses settings.model_builder. Returns None (never a fake plan) when the model
     cannot produce a usable App component, so the orchestrator can be honest.
+    When ``repair_error`` is set, the model is told why its previous attempt
+    was rejected so the retry can avoid the same mistake.
     """
     feature_hint = f"\nSpecific features requested: {', '.join(features)}" if features else ""
     user_prompt = (
@@ -186,6 +189,12 @@ async def generate_plan(
         f"Suggested type: {app_type}"
         f"{feature_hint}"
     )
+    if repair_error:
+        user_prompt += (
+            "\n\nYour previous attempt was rejected: "
+            f"{repair_error}\n"
+            "Return a corrected, complete response that fixes this problem."
+        )
 
     try:
         raw_parts: list[str] = []

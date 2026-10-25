@@ -196,11 +196,13 @@ def build_narrate(text: str, task_id: str) -> dict[str, Any]:
     return event("build_narrate", text=text, task_id=task_id)
 
 
-def build_complete(workspace: str, app_name: str, task_id: str) -> dict[str, Any]:
+def build_complete(workspace: str, app_name: str, task_id: str,
+                   preview_url: str | None = None) -> dict[str, Any]:
     """Emitted when the project has been generated and saved to its workspace directory.
 
     ``url`` is included as a legacy alias (set to ``workspace``) so any consumer
     still reading the pre-workspace field shape does not silently break.
+    ``preview_url`` is the backend-relative path of the compiled app.
     """
     return event(
         "build_complete",
@@ -208,6 +210,7 @@ def build_complete(workspace: str, app_name: str, task_id: str) -> dict[str, Any
         app_name=app_name,
         task_id=task_id,
         url=workspace,
+        preview_url=preview_url,
     )
 
 
@@ -226,7 +229,8 @@ def edit_started(task_id: str, app_name: str, summary: str, files: list) -> dict
     return event("edit_started", task_id=task_id, app_name=app_name, summary=summary, files=files)
 
 
-def edit_complete(task_id: str, app_name: str, workspace: str, files: list) -> dict[str, Any]:
+def edit_complete(task_id: str, app_name: str, workspace: str, files: list,
+                  preview_url: str | None = None) -> dict[str, Any]:
     """Emitted when an edit has been applied and validated on disk.
 
     ``url`` is included as a legacy alias (set to ``workspace``) since the edit
@@ -240,6 +244,7 @@ def edit_complete(task_id: str, app_name: str, workspace: str, files: list) -> d
         workspace=workspace,
         url=workspace,
         files=files,
+        preview_url=preview_url,
     )
 
 
@@ -257,7 +262,8 @@ def clarification_requested(question: str) -> dict[str, Any]:
     return event("clarification_requested", question=question)
 
 
-def version_restored(task_id: str, action: str, label: str, workspace: str) -> dict[str, Any]:
+def version_restored(task_id: str, action: str, label: str, workspace: str,
+                     preview_url: str | None = None) -> dict[str, Any]:
     """Emitted after an undo/redo restores a previous version of the project.
 
     ``action`` is "undo" or "redo"; ``label`` describes the version restored to.
@@ -271,6 +277,7 @@ def version_restored(task_id: str, action: str, label: str, workspace: str) -> d
         label=label,
         workspace=workspace,
         url=workspace,
+        preview_url=preview_url,
     )
 
 

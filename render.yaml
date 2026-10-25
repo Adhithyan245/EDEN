@@ -1,0 +1,36 @@
+# Render Blueprint for EDEN's backend. In the Render dashboard:
+# New → Blueprint → pick this repo. Render asks for every `sync: false` value.
+services:
+  - type: web
+    name: eden-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Secrets — entered in the dashboard, never committed.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: EDEN_ACCESS_CODE
+        sync: false
+      # The Vercel URL(s) allowed to open the socket, comma-separated.
+      - key: EDEN_ALLOWED_ORIGINS
+        sync: false
+      - key: EDEN_MODE
+        value: SAFE
+      - key: EDEN_AGENT_ENABLED
+        value: "true"
+      # Memory is one shared store; on a public server it would mix visitors.
+      - key: EDEN_MEMORY_ENABLED
+        value: "false"
+      # Browser speech instead of ElevenLabs, so visitors don't spend credits.
+      - key: EDEN_VOICE_ENABLED
+        value: "false"
+      - key: EDEN_USER_NAME
+        value: there
+      - key: EDEN_MAX_MESSAGES_PER_MINUTE
+        value: "12"
+      - key: EDEN_MAX_AGENT_TASKS_PER_HOUR
+        value: "30"

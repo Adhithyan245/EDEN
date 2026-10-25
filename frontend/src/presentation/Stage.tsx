@@ -12,6 +12,7 @@ import Captions from "./Captions";
 import Clarification from "./Clarification";
 import Composer from "./Composer";
 import Presence from "./Presence";
+import PreviewLink from "./PreviewLink";
 import { colorFor, type PresentationState } from "./state/presentation";
 
 interface Props {
@@ -74,6 +75,8 @@ export default function Stage({ state, onSend, onListening }: Props) {
         phases={state.phases}
         color={color}
       />
+
+      <PreviewLink preview={state.preview} />
 
       <Captions
         text={state.caption}

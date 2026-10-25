@@ -5,16 +5,15 @@ that was built and saved to its workspace, and it does exactly what a careful
 engineer would do with no server running:
 
     read current files → plan a minimal edit → validate → patch → confirm the
-    workspace is still an intact project → acknowledge, honestly.
+    workspace is still an intact project → compile (vite build) → acknowledge.
 
-It NEVER rebuilds, reinstalls, launches a dev server, or opens a browser.
-Writing to the workspace is the entire edit — there is nothing to hot-reload
-and nothing running to verify.
+It NEVER reinstalls, launches a dev server, or opens a browser. The compile
+step refreshes the static preview the backend serves.
 
 Safety:
   - Static validation happens before anything is written (in the patcher).
-  - On validation failure, one automatic repair is attempted with the error as
-    context. If that also fails, the previous file contents are restored so
+  - On a validation or compile failure, one automatic repair is attempted with
+    the error as context. If that also fails, the previous file contents are restored so
     the workspace returns to its last working state.
   - Success is acknowledged only after the workspace is confirmed intact
     (package.json present, src/ present, edited files on disk). No faked
@@ -30,6 +29,7 @@ from fastapi import WebSocket
 from .. import events
 from ..agents.edit_planner import EditPlan, generate_edit_plan
 from ..agents.narrator import narrate_stage
+from ..agents.orchestrator import compile_step
 from ..agents.router import RoutingDecision
 from ..builder.active_project import ActiveProject, project_manager
 from ..builder.patcher import apply_edit
@@ -110,34 +110,45 @@ class EditOrchestrator:
 
         # 4. Narrate editing + apply (validate → patch) -----------------------
         await narrate_stage("editing", ctx, llm, tts, websocket, system_prompt, scope)
-        result = await apply_edit(plan, project.workspace, task, websocket)
-
-        # 5. One repair attempt on validation failure -------------------------
-        if not result.success:
-            log.info("edit failed validation (%s) — attempting one repair", result.error)
-            repair = await generate_edit_plan(
-                project.summary(), request, current_files, llm, repair_error=result.error
-            )
-            if repair and not repair.is_empty:
-                result = await apply_edit(repair, project.workspace, task, websocket)
-                if result.success:
-                    plan = repair
-            if not result.success:
-                result.snapshot.restore()  # back to last working state
-                await self._fail(task, project, "the change didn't hold", ctx,
-                                 llm, tts, websocket, system_prompt, scope, restored=True)
-                return
-
-        # 6. Validate the workspace is still an intact project (no server to
-        #    verify against — the edit either landed on disk cleanly or it
-        #    didn't) ------------------------------------------------------
-        task.mark_validating()
-        await websocket.send_json(events.task_updated(task.to_dict()))
-        wv = validate_workspace(project.workspace, result.changed)
-        if not wv.ok:
+        # 5. Apply → validate → compile, with ONE repair attempt shared by
+        #    static-validation and compile failures. The repair is generated
+        #    against the original files with the error as context; if it also
+        #    fails, the original files are restored. ----------------------
+        original = None   # snapshot of the pre-edit files, from the first apply
+        preview_url = None
+        for attempt in range(2):
+            result = await apply_edit(plan, project.workspace, task, websocket)
+            original = original or result.snapshot
+            error = result.error if not result.success else ""
+            if not error:
+                task.mark_validating()
+                await websocket.send_json(events.task_updated(task.to_dict()))
+                wv = validate_workspace(project.workspace, result.changed)
+                error = "" if wv.ok else (wv.reason or "the workspace no longer looks valid")
+            if not error:
+                compiled, preview_url = await compile_step(project.workspace, task, websocket)
+                error = "" if compiled.ok else f"the app failed to compile:\n{compiled.error}"
+            if not error:
+                break
+            log.info("edit failed validation (%s) — %s", error[:200],
+                     "attempting one repair" if attempt == 0 else "giving up")
+            if attempt == 0:
+                # Undo the bad attempt so the repair starts from the original files.
+                result.snapshot.restore()
+                repair = await generate_edit_plan(
+                    project.summary(), request, current_files, llm, repair_error=error
+                )
+                if repair is None or repair.is_empty:
+                    break
+                plan = repair
+        if error:
+            # Back to the last working state: the latest snapshot covers files
+            # only the repair touched, the original covers the first attempt's.
             result.snapshot.restore()
-            await self._fail(task, project, wv.reason or "the workspace no longer looks valid",
-                             ctx, llm, tts, websocket, system_prompt, scope, restored=True)
+            original.restore()
+            await compile_step(project.workspace, task, websocket)  # refresh preview
+            await self._fail(task, project, "the change didn't hold", ctx,
+                             llm, tts, websocket, system_prompt, scope, restored=True)
             return
 
         # 7. Complete — saved to the workspace, nothing running to reopen ----
@@ -149,8 +160,9 @@ class EditOrchestrator:
         project.note(f"Edited: {plan.summary}")
         # Record this as a new version so it can be undone later.
         version_manager.record(project, plan.summary)
+        project.url = preview_url or project.url
         await websocket.send_json(events.edit_complete(
-            task.id, project.app_name, str(project.workspace), result.changed
+            task.id, project.app_name, str(project.workspace), result.changed, preview_url
         ))
 
         complete_ctx = {"app_name": project.app_name, "change": plan.summary,
@@ -196,12 +208,20 @@ class EditOrchestrator:
             await self._fail(task, project, wv.reason or "the workspace no longer looks valid",
                              ctx, llm, tts, websocket, system_prompt, scope, restored=False)
             return
+        # Every stored version compiled when it was recorded; rebuild so the
+        # preview shows the restored version.
+        compiled, preview_url = await compile_step(project.workspace, task, websocket)
+        if not compiled.ok:
+            await self._fail(task, project, "the restored version did not compile",
+                             ctx, llm, tts, websocket, system_prompt, scope, restored=False)
+            return
 
         task.mark_completed({"workspace": str(project.workspace), "version": snap.label})
         await websocket.send_json(events.task_updated(task.to_dict()))
         project.note(f"{op} → {snap.label}")
+        project.url = preview_url or project.url
         await websocket.send_json(
-            events.version_restored(task.id, op, snap.label, str(project.workspace))
+            events.version_restored(task.id, op, snap.label, str(project.workspace), preview_url)
         )
         await narrate_stage("undo_done" if op == "undo" else "redo_done",
                             ctx, llm, tts, websocket, system_prompt, scope)

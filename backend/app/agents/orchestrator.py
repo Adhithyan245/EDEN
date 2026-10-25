@@ -2,15 +2,18 @@
 
 Single entry point for BUILD requests. It owns the lifecycle:
 
-    acknowledge → sandbox → plan → generate → write → install → save → complete
+    acknowledge → sandbox → plan → generate → validate (one repair) → write
+    → install → save → complete
 
 Reality rules enforced here:
   - Narration for a stage is emitted only when that stage is genuinely the
     current reality (files are narrated after they are written; installing is
     narrated while npm install is actually running).
   - Any failed phase stops the build immediately and is reported honestly.
-  - The pipeline does NOT launch applications, assign ports, open browsers,
-    verify rendering, or repair generated UI.
+  - Generated code is checked twice: statically before anything is written,
+    and by a real ``vite build`` after install. Each check allows one repair.
+  - The pipeline does NOT launch dev servers, assign ports, or open browsers;
+    the compiled app is served as static files at its preview URL.
 """
 
 from __future__ import annotations
@@ -27,15 +30,67 @@ from ..agents.planner import generate_plan
 from ..agents.router import RoutingDecision
 from ..builder.active_project import ActiveProject, project_manager
 from ..builder.generator import from_plan, GeneratedProject
+from ..builder.preview import publish
 from ..builder.sandbox import sandbox_manager
 from ..builder.validator import validate_file
 from ..builder.version_manager import version_manager
 from ..providers.base import LLMProvider, TTSProvider
 from ..session import Session
+from ..tools import filesystem
 
 log = logging.getLogger("eden.agents.orchestrator")
 
 _executor = Executor()
+
+# How many times a rejected generation is regenerated before the build fails.
+_MAX_BUILD_REPAIRS = 1
+
+
+def _check_generation(plan) -> str | None:
+    """Return why a generated plan is unusable, or None if it can be built.
+
+    Catches broken LLM output (no plan, unbalanced braces, missing default
+    export, forbidden imports) before npm install wastes time on bad code.
+    """
+    if plan is None:
+        return "the design could not be generated"
+    project = from_plan(plan)
+    if not project.files:
+        return "no project files were produced"
+    for f in project.files:
+        if f.path in ("src/App.jsx", "src/styles.css"):
+            vr = validate_file(f.path, f.content)
+            if not vr.ok:
+                return f"generated code is invalid: {vr.reason}"
+    return None
+
+
+async def compile_step(workspace, task, websocket):
+    """Run the compile check as a visible tool step. Returns (result, preview_url)."""
+    idx = len(task.completed_steps) + len(task.failed_steps)
+    await websocket.send_json(events.tool_called(
+        "run_command", {"command": "npm run build"}, idx, task.id
+    ))
+    task.begin_step("compile:npm run build")
+    result, preview_url = await publish(workspace)
+    if result.ok:
+        task.complete_step("compile:npm run build")
+    else:
+        task.fail_step("compile:npm run build")
+    await websocket.send_json(events.tool_result(
+        "run_command", result.ok, "compiled" if result.ok else result.error[-400:], idx, task.id
+    ))
+    return result, preview_url
+
+
+async def _rewrite_app_files(plan, project) -> bool:
+    """Overwrite the planner-owned files with a repaired plan's versions."""
+    for f in from_plan(plan).files:
+        if f.path in ("src/App.jsx", "src/styles.css"):
+            r = await filesystem.create_file(project.workspace / f.path, f.content)
+            if not r.success:
+                return False
+    return True
 
 # Human-readable pipeline shown to the frontend before execution begins.
 _PIPELINE_STEPS = [
@@ -43,6 +98,7 @@ _PIPELINE_STEPS = [
     "Generate the application",
     "Write the project files",
     "Install dependencies",
+    "Compile the app",
     "Save project",
 ]
 
@@ -91,20 +147,30 @@ class Orchestrator:
         task.mark_planning()
         await websocket.send_json(events.task_updated(task.to_dict()))
 
-        # 4. Plan (LLM) --------------------------------------------------------
-        plan = await generate_plan(
-            task_id      = task.id,
-            app_type     = task.app_type or "application",
-            app_name     = app_name,
-            user_request = task.user_request,
-            features     = decision.intent.features,
-            llm          = llm,
-            workspace    = sb.root,
-        )
-        if plan is None:
+        # 4–5b. Plan (LLM) → generate → validate, with one repair attempt ------
+        #       A rejected generation is retried once with the rejection reason
+        #       as context, mirroring the edit pipeline's single repair.
+        plan, project, failure = None, None, None
+        for attempt in range(1 + _MAX_BUILD_REPAIRS):
+            plan = await generate_plan(
+                task_id      = task.id,
+                app_type     = task.app_type or "application",
+                app_name     = app_name,
+                user_request = task.user_request,
+                features     = decision.intent.features,
+                llm          = llm,
+                workspace    = sb.root,
+                repair_error = failure,
+            )
+            failure = _check_generation(plan)
+            if failure is None:
+                project = from_plan(plan)
+                break
+            log.info("build generation rejected (attempt %d): %s", attempt + 1, failure)
+
+        if failure is not None:
             await self._fail(
-                task, "the design could not be generated",
-                ctx, llm, tts, websocket, system_prompt, scope,
+                task, failure, ctx, llm, tts, websocket, system_prompt, scope,
             )
             return
 
@@ -121,29 +187,6 @@ class Orchestrator:
             app_name = plan.app_name,
             app_type = plan.app_type,
         ))
-
-        # 5. Generate the project (scaffold + app files) -----------------------
-        project = from_plan(plan)
-        if not project.files:
-            await self._fail(
-                task, "no project files were produced",
-                ctx, llm, tts, websocket, system_prompt, scope,
-            )
-            return
-
-        # 5b. Validate generated app files before doing anything expensive.
-        #     Catches broken LLM output (unbalanced braces, missing default
-        #     export, forbidden imports) before npm install wastes time on
-        #     bad code.
-        for f in project.files:
-            if f.path in ("src/App.jsx", "src/styles.css"):
-                vr = validate_file(f.path, f.content)
-                if not vr.ok:
-                    await self._fail(
-                        task, f"generated code is invalid: {vr.reason}",
-                        ctx, llm, tts, websocket, system_prompt, scope,
-                    )
-                    return
 
         # 6. Signal build start -----------------------------------------------
         await websocket.send_json(events.build_started(plan.app_type, plan.app_name, task.id))
@@ -173,14 +216,42 @@ class Orchestrator:
                 )
                 return
 
-        # 9. Complete — workspace saved, nothing launched ---------------------
-        task.mark_completed({"workspace": str(project.workspace)})
+        # 9. Compile (vite build) — the real verifier. One repair on failure,
+        #    with the compiler output as context. -----------------------------
+        task.mark_validating()
+        await websocket.send_json(events.task_updated(task.to_dict()))
+        compiled, preview_url = await compile_step(project.workspace, task, websocket)
+        if not compiled.ok:
+            log.info("build failed to compile — attempting one repair: %s", compiled.error[:200])
+            repaired = await generate_plan(
+                task_id      = task.id,
+                app_type     = plan.app_type,
+                app_name     = plan.app_name,
+                user_request = task.user_request,
+                features     = decision.intent.features,
+                llm          = llm,
+                workspace    = sb.root,
+                repair_error = f"the app failed to compile:\n{compiled.error}",
+            )
+            if _check_generation(repaired) is None and await _rewrite_app_files(repaired, project):
+                plan = repaired
+                compiled, preview_url = await compile_step(project.workspace, task, websocket)
+        if not compiled.ok:
+            await self._fail(
+                task, "the generated app did not compile",
+                ctx, llm, tts, websocket, system_prompt, scope,
+            )
+            return
+
+        # 10. Complete — saved and compiled; preview served as static files ----
+        task.mark_completed({"workspace": str(project.workspace), "preview_url": preview_url})
         await websocket.send_json(events.task_updated(task.to_dict()))
         await websocket.send_json(
             events.build_complete(
                 str(project.workspace),
                 plan.app_name,
                 task.id,
+                preview_url,
             )
         )
 
@@ -192,7 +263,7 @@ class Orchestrator:
             framework   = project.stack,
             workspace   = project.workspace,
             port        = 0,
-            url         = "",
+            url         = preview_url or "",
             files       = project.file_paths,
             dev_process = None,
             plan        = plan,

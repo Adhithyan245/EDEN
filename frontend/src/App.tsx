@@ -1,18 +1,39 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { WS_URL } from "./config";
 import { EdenSocket } from "./lib/socket";
 import { audioBus } from "./lib/audio";
+import AccessGate from "./presentation/AccessGate";
 import Stage from "./presentation/Stage";
 import { usePresentation } from "./presentation/state/usePresentation";
+
+const CODE_KEY = "eden.accessCode";
+
+function loadCode(): string | null {
+  try {
+    return localStorage.getItem(CODE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveCode(code: string | null): void {
+  try {
+    if (code) localStorage.setItem(CODE_KEY, code);
+    else localStorage.removeItem(CODE_KEY);
+  } catch {
+    /* storage unavailable — the code just isn't remembered */
+  }
+}
 
 /**
  * EDEN is an event renderer. The socket streams typed events; usePresentation
  * turns them into presentation state; Stage draws that state cinematically.
- * There is no UI beyond EDEN.
+ * There is no UI beyond EDEN (and, on a private deployment, its access code).
  */
 export default function App() {
   const { state, ingest, setConnected, userSpoke, setListening } = usePresentation();
+  const [auth, setAuth] = useState<{ open: boolean; rejected: boolean }>({ open: false, rejected: false });
 
   // ingest / setConnected are stable (useCallback []), so this connects once.
   const ingestRef = useRef(ingest);
@@ -26,7 +47,15 @@ export default function App() {
     const socket = new EdenSocket(
       WS_URL,
       (ev) => ingestRef.current(ev),
-      (c) => connRef.current(c),
+      (c) => {
+        connRef.current(c);
+        if (c) setAuth({ open: false, rejected: false });
+      },
+      (rejected) => {
+        if (rejected) saveCode(null);
+        setAuth({ open: true, rejected });
+      },
+      loadCode(),
     );
     socketRef.current = socket;
     socket.connect();
@@ -40,5 +69,15 @@ export default function App() {
     socketRef.current.send({ type: "user_message", text });
   }
 
-  return <Stage state={state} onSend={onSend} onListening={setListening} />;
+  function onCode(code: string) {
+    saveCode(code);
+    socketRef.current?.authenticate(code);
+  }
+
+  return (
+    <>
+      <Stage state={state} onSend={onSend} onListening={setListening} />
+      <AccessGate open={auth.open} rejected={auth.rejected} onSubmit={onCode} />
+    </>
+  );
 }

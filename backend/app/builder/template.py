@@ -58,7 +58,10 @@ import react from '@vitejs/plugin-react'
 // Port is supplied on the command line at launch time (--port / --strictPort).
 // host: true listens on all interfaces (127.0.0.1 + ::1) so the browser can
 // reach the server regardless of how 'localhost' resolves on this machine.
+// base: './' keeps built asset URLs relative, so EDEN can serve the compiled
+// app from /preview/<id>/.
 export default defineConfig({{
+  base: './',
   plugins: [react()],
   server: {{ host: true }},
 }})

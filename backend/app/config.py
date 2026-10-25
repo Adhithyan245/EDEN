@@ -49,6 +49,10 @@ class Settings:
         self.gemini_api_key = _env("GEMINI_API_KEY")
         self.model_voice = _env("EDEN_MODEL_VOICE", "gemini-3.1-flash-lite")
         self.model_builder = _env("EDEN_MODEL_BUILDER", "gemini-3.1-flash-lite")
+        # Used when the primary model keeps failing with an overload / rate
+        # limit / not-found error. Set to "none" to disable.
+        fallback = _env("EDEN_MODEL_FALLBACK", "gemini-3.5-flash-lite")
+        self.model_fallback = None if (fallback or "").lower() == "none" else fallback
 
         # Search / Research
         self.tavily_api_key = _env("TAVILY_API_KEY")

@@ -14,9 +14,12 @@ Model IDs verified by live probe (client.models.list() + generateContent call) o
 
 from __future__ import annotations
 
+import asyncio
 import logging
+import time
 from typing import AsyncIterator, Optional
 
+import httpx
 from google import genai
 from google.genai import types
 
@@ -94,14 +97,85 @@ class GeminiLLM:
             response_mime_type="application/json",
         )
 
-        try:
-            async for chunk in await self._client.aio.models.generate_content_stream(
-                model=model,
-                contents=contents,
-                config=config,
-            ):
-                if chunk.text:
-                    yield chunk.text
-        except Exception as exc:
-            log.error("Gemini API error (%s): %s", type(exc).__name__, exc)
-            raise
+        # Transient failures (503 overload, 429 rate limit, network blips) are
+        # common on the free tier. Retry them, then switch to the fallback model
+        # — but only before the first chunk is yielded, so a caller never sees
+        # a reply restart halfway through.
+        attempts = _attempt_plan(model, settings.model_fallback)
+        for i, (attempt_model, delay) in enumerate(attempts):
+            if delay:
+                await asyncio.sleep(delay)
+            yielded = False
+            try:
+                async for chunk in await self._client.aio.models.generate_content_stream(
+                    model=attempt_model,
+                    contents=contents,
+                    config=config,
+                ):
+                    if chunk.text:
+                        yielded = True
+                        yield chunk.text
+                _BREAKER.succeeded(attempt_model)
+                if attempt_model != model:
+                    log.info("gemini: served by fallback model %s", attempt_model)
+                return
+            except Exception as exc:
+                last = i == len(attempts) - 1
+                if _is_retryable(exc):
+                    _BREAKER.failed(attempt_model)
+                if yielded or last or not _is_retryable(exc):
+                    log.error("Gemini API error (%s): %s", type(exc).__name__, exc)
+                    raise
+                log.warning(
+                    "gemini: %s on %s (attempt %d/%d) — retrying",
+                    _status(exc) or type(exc).__name__, attempt_model, i + 1, len(attempts),
+                )
+
+
+# Primary model is tried twice, then the fallback twice. Delays are seconds
+# before each attempt.
+_RETRY_DELAYS = (0.0, 1.5)
+
+# After a model fails with a retryable error, skip straight to the fallback for
+# this long instead of waiting on the failing model every request. 503s from an
+# overloaded model can take many seconds each to come back.
+_COOLDOWN_SECONDS = 120.0
+
+
+class _Breaker:
+    def __init__(self) -> None:
+        self._down_until: dict[str, float] = {}
+
+    def failed(self, model: str) -> None:
+        self._down_until[model] = time.monotonic() + _COOLDOWN_SECONDS
+
+    def succeeded(self, model: str) -> None:
+        self._down_until.pop(model, None)
+
+    def is_down(self, model: str) -> bool:
+        return time.monotonic() < self._down_until.get(model, 0.0)
+
+
+_BREAKER = _Breaker()
+
+
+def _attempt_plan(primary: str, fallback: Optional[str]) -> list[tuple[str, float]]:
+    if not fallback or fallback == primary:
+        return [(primary, d) for d in _RETRY_DELAYS]
+    if _BREAKER.is_down(primary) and not _BREAKER.is_down(fallback):
+        # Primary is cooling down: fallback first, primary once as a last resort.
+        return [(fallback, d) for d in _RETRY_DELAYS] + [(primary, _RETRY_DELAYS[-1])]
+    return [(primary, d) for d in _RETRY_DELAYS] + [(fallback, d) for d in _RETRY_DELAYS]
+
+
+def _status(exc: Exception) -> Optional[int]:
+    code = getattr(exc, "code", None)
+    return code if isinstance(code, int) else None
+
+
+def _is_retryable(exc: Exception) -> bool:
+    """Overload, rate limit, server error, missing model, or a network failure."""
+    code = _status(exc)
+    if code is not None:
+        return code in (404, 408, 429) or code >= 500
+    return isinstance(exc, (httpx.TransportError, asyncio.TimeoutError, ConnectionError))

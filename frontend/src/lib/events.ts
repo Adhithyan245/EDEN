@@ -90,15 +90,15 @@ export type EdenEvent =
   | { type: "tool_called"; tool: string; args: Record<string, unknown>; step_index: number; task_id: string }
   | { type: "tool_result"; tool: string; success: boolean; output: string; step_index: number; task_id: string }
   | { type: "build_narrate"; text: string; task_id: string }
-  | { type: "build_complete"; url: string; app_name: string; task_id: string }
+  | { type: "build_complete"; url: string; app_name: string; task_id: string; preview_url?: string | null }
   | { type: "build_failed"; reason: string; used_fallback: boolean; task_id: string }
   // --- edit lifecycle ---
   | { type: "edit_started"; task_id: string; app_name: string; summary: string; files: string[] }
-  | { type: "edit_complete"; task_id: string; app_name: string; url: string; files: string[] }
+  | { type: "edit_complete"; task_id: string; app_name: string; url: string; files: string[]; preview_url?: string | null }
   | { type: "edit_failed"; task_id: string; reason: string; restored: boolean }
   // --- collaboration ---
   | { type: "clarification_requested"; question: string }
-  | { type: "version_restored"; task_id: string; action: string; label: string; url: string }
+  | { type: "version_restored"; task_id: string; action: string; label: string; url: string; preview_url?: string | null }
   | { type: "suggestion"; text: string }
   // --- render verification (after HTTP verify, before browser open) ---
   | { type: "render_verifying"; url: string; task_id: string }

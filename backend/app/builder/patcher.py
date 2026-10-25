@@ -29,6 +29,8 @@ from ..tools import filesystem
 
 log = logging.getLogger("eden.builder.patcher")
 
+_EDITABLE_SUFFIXES = (".jsx", ".tsx", ".js", ".ts", ".css")
+
 
 @dataclass
 class PatchResult:
@@ -49,6 +51,21 @@ async def apply_edit(
     On any validation failure, nothing is written and ``success`` is False. The
     snapshot always reflects the pre-edit state so the caller can restore.
     """
+    # 0. Every path must stay inside the workspace. Checked before the snapshot
+    #    so a hostile path is never even read.
+    #    Edits are also limited to source files under src/: package.json,
+    #    the Vite config and index.html belong to the scaffold.
+    for edit in plan.edits:
+        if filesystem.resolve_within(workspace, edit.path) is None:
+            log.warning("patch rejected: path escapes workspace: %r", edit.path)
+            return PatchResult(success=False, snapshot=Snapshot.capture(workspace, []),
+                               error=f"{edit.path} is outside the project")
+        if not (edit.path.startswith("src/") and edit.path.lower().endswith(_EDITABLE_SUFFIXES)):
+            log.warning("patch rejected: not an editable source file: %r", edit.path)
+            return PatchResult(success=False, snapshot=Snapshot.capture(workspace, []),
+                               error=f"{edit.path} is not an editable source file "
+                                     "(only .jsx/.tsx/.js/.ts/.css files under src/)")
+
     paths = plan.touches
     snapshot = Snapshot.capture(workspace, paths)
 

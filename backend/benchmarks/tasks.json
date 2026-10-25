@@ -1,0 +1,25 @@
+{
+  "name": "eden-bench-v1",
+  "description": "First EDEN benchmark: 12 small single-page React build requests, each optionally followed by one iterative edit request on the app it produced. Created 2026-10-25. Tasks are deliberately scoped to what EDEN's scaffold supports (React 18 + Vite, App.jsx + styles.css, no third-party packages).",
+  "clarification_answer": "Keep it simple: a single page, no backend, use your best judgement on the details.",
+  "tasks": [
+    {"id": "B01", "build": "Build a counter app with increment, decrement and reset buttons.",
+     "edit": "Make the counter stop at zero so it can never go negative."},
+    {"id": "B02", "build": "Build a todo list app where I can add tasks, mark them complete, and delete them.",
+     "edit": "Add filter buttons to show all, active, or completed tasks."},
+    {"id": "B03", "build": "Build a tip calculator with bill amount, tip percentage and number of people that shows the total per person."},
+    {"id": "B04", "build": "Build a stopwatch app with start, stop, lap and reset buttons and a list of lap times.",
+     "edit": "Change the colour scheme to a light theme with dark text."},
+    {"id": "B05", "build": "Build a Pomodoro timer with 25 minute work sessions and 5 minute breaks, with start, pause and reset."},
+    {"id": "B06", "build": "Build a unit converter app that converts kilometres to miles and Celsius to Fahrenheit."},
+    {"id": "B07", "build": "Build a random quote generator app with ten built-in quotes and a new quote button."},
+    {"id": "B08", "build": "Build a two-player tic-tac-toe game that announces the winner and has a restart button.",
+     "edit": "Add a scoreboard that keeps track of how many games X and O have won."},
+    {"id": "B09", "build": "Build a notes app where I can add a note with a title and body, see all my notes in a list, and delete them."},
+    {"id": "B10", "build": "Build a password strength checker app that shows a strength meter and tips for improving the password."},
+    {"id": "B11", "build": "Build a BMI calculator app that takes height in centimetres and weight in kilograms and shows the BMI category.",
+     "edit": "Add a toggle to switch between metric and imperial units, using pounds and inches."},
+    {"id": "B12", "build": "Build a flashcard app with five built-in cards where I can flip a card to see the answer and go to the next or previous card.",
+     "edit": "Add a shuffle button that randomises the card order."}
+  ]
+}

@@ -19,17 +19,23 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import events
+from .builder.preview import previews
 from .config import settings
+from .guard import CLOSE_FORBIDDEN_ORIGIN, CLOSE_UNAUTHORIZED, guard
 from .memory import build_memory_manager
 from .perception import is_wake_phrase, resolve_scope
 from .prompts.eden_personality import build_system_prompt
 from .providers import factory
 from .session import PendingClarification, Session
 from .tools.portguard import kill_stale_backend_on_port
+from .tools.filesystem import resolve_within
 from .tools.shell import kill_orphaned_dev_servers
 from .utils import parse_llm_response
 from .voice import speak as _speak_voice
@@ -64,7 +70,7 @@ app = FastAPI(title="EDEN", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=sorted(guard.allowed_origins) or ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -106,8 +112,14 @@ async def health() -> dict:
 
 
 @app.get("/diagnose")
-async def diagnose() -> dict:
-    """Live connectivity check for the currently selected LLM provider."""
+async def diagnose(request: Request) -> dict:
+    """Live connectivity check for the currently selected LLM provider.
+
+    Spends an LLM call, so a public deployment requires the access code in the
+    ``X-EDEN-Access`` header.
+    """
+    if guard.access_code and request.headers.get("x-eden-access") != guard.access_code:
+        raise HTTPException(status_code=401, detail="access code required")
     result: dict = {
         "mode": settings.mode.value,
         "llm":  LLM.name,
@@ -134,13 +146,44 @@ async def diagnose() -> dict:
     return result
 
 
+@app.get("/preview/{pid}/{path:path}")
+async def preview(pid: str, path: str = "") -> FileResponse:
+    """Serve a compiled app (its vite ``dist/``) by its unguessable preview id."""
+    dist = previews.dist(pid)
+    if dist is None or not dist.is_dir():
+        raise HTTPException(status_code=404, detail="preview not found")
+    target = resolve_within(dist, path) if path else dist / "index.html"
+    if target is None:
+        raise HTTPException(status_code=404, detail="not found")
+    if target.is_dir():
+        target = target / "index.html"
+    if not target.is_file():
+        # Single-page app: unknown paths fall back to the entry page.
+        target = dist / "index.html"
+    return FileResponse(target, headers={"Cache-Control": "no-store"})
+
+
 # ---------------------------------------------------------------------------
 # WebSocket
 # ---------------------------------------------------------------------------
 
+# Longest user message accepted; a real request is a sentence or two.
+_MAX_MESSAGE_CHARS = 2000
+
+
 @app.websocket("/ws")
 async def ws(websocket: WebSocket) -> None:
-    await websocket.accept()
+    # Public-deployment checks (all no-ops unless configured; see guard.py).
+    # Accept first so the browser receives the close code and can react.
+    await websocket.accept(subprotocol=guard.subprotocol(websocket))
+    if not guard.origin_allowed(websocket.headers.get("origin")):
+        log.warning("rejected websocket from origin %r", websocket.headers.get("origin"))
+        await websocket.close(code=CLOSE_FORBIDDEN_ORIGIN)
+        return
+    if not guard.authorized(websocket):
+        await websocket.close(code=CLOSE_UNAUTHORIZED)
+        return
+    limiter = guard.message_limiter()
     session = Session()
     log.info(
         "client connected (mode=%s llm=%s tts=%s agent=%s)",
@@ -157,7 +200,12 @@ async def ws(websocket: WebSocket) -> None:
                 await websocket.send_json(events.pong())
                 continue
             if kind == "user_message":
-                await _handle_user_message(websocket, session, str(msg.get("text", "")))
+                if not limiter.allow():
+                    await _notice(websocket, "You're sending messages faster than I can keep up. "
+                                             "Give me a few seconds.")
+                    continue
+                text = str(msg.get("text", ""))[:_MAX_MESSAGE_CHARS]
+                await _handle_user_message(websocket, session, text)
                 continue
             log.warning("unknown message type: %r", kind)
     except WebSocketDisconnect:
@@ -168,6 +216,13 @@ async def ws(websocket: WebSocket) -> None:
             await websocket.send_json(events.error(str(exc)))
         except Exception:
             pass
+
+
+async def _notice(websocket: WebSocket, text: str) -> None:
+    """Tell the user something without running the LLM (limits, busy)."""
+    await websocket.send_json(events.response_ready(text))
+    await _speak_voice(websocket, TTS, text)
+    await websocket.send_json(events.state(events.State.IDLE))
 
 
 # ---------------------------------------------------------------------------
@@ -202,16 +257,20 @@ async def _resume_after_clarification(
         task   = task,
         reason = "clarification answered",
     )
-    await websocket.send_json(events.task_created(task.to_dict()))
     try:
-        await _ORCHESTRATOR.run(
-            websocket     = websocket,
-            session       = session,
-            decision      = decision,
-            llm           = LLM,
-            tts           = TTS,
-            system_prompt = SYSTEM_PROMPT,
-        )
+        async with guard.agent_slot() as refused:
+            if refused:
+                await _notice(websocket, refused)
+                return
+            await websocket.send_json(events.task_created(task.to_dict()))
+            await _ORCHESTRATOR.run(
+                websocket     = websocket,
+                session       = session,
+                decision      = decision,
+                llm           = LLM,
+                tts           = TTS,
+                system_prompt = SYSTEM_PROMPT,
+            )
     finally:
         await websocket.send_json(events.state(events.State.IDLE))
 
@@ -281,15 +340,19 @@ async def _handle_user_message(
                 if decision.task.intent == TaskIntent.EDIT:
                     # Show the constellation immediately so the audience sees the
                     # build environment before the 5-8 s edit-plan wait.
-                    await websocket.send_json(events.task_created(decision.task.to_dict()))
-                    await _EDIT_ORCHESTRATOR.run(
-                        websocket     = websocket,
-                        session       = session,
-                        decision      = decision,
-                        llm           = LLM,
-                        tts           = TTS,
-                        system_prompt = SYSTEM_PROMPT,
-                    )
+                    async with guard.agent_slot() as refused:
+                        if refused:
+                            await _notice(websocket, refused)
+                            return
+                        await websocket.send_json(events.task_created(decision.task.to_dict()))
+                        await _EDIT_ORCHESTRATOR.run(
+                            websocket     = websocket,
+                            session       = session,
+                            decision      = decision,
+                            llm           = LLM,
+                            tts           = TTS,
+                            system_prompt = SYSTEM_PROMPT,
+                        )
                 else:
                     # Understand first: a real engineer may ask ONE question
                     # before building if the answer changes the architecture.
@@ -309,15 +372,19 @@ async def _handle_user_message(
                         await websocket.send_json(events.state(events.State.IDLE))
                         return   # wait for the answer; build resumes next turn
                     # Show the planning phase immediately before the 4-5 s LLM wait.
-                    await websocket.send_json(events.task_created(decision.task.to_dict()))
-                    await _ORCHESTRATOR.run(
-                        websocket     = websocket,
-                        session       = session,
-                        decision      = decision,
-                        llm           = LLM,
-                        tts           = TTS,
-                        system_prompt = SYSTEM_PROMPT,
-                    )
+                    async with guard.agent_slot() as refused:
+                        if refused:
+                            await _notice(websocket, refused)
+                            return
+                        await websocket.send_json(events.task_created(decision.task.to_dict()))
+                        await _ORCHESTRATOR.run(
+                            websocket     = websocket,
+                            session       = session,
+                            decision      = decision,
+                            llm           = LLM,
+                            tts           = TTS,
+                            system_prompt = SYSTEM_PROMPT,
+                        )
                 await websocket.send_json(events.state(events.State.IDLE))
                 return   # ← skip conversational pipeline for BUILD/EDIT requests
 
