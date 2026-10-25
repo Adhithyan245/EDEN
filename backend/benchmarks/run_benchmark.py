@@ -18,6 +18,7 @@ Differences from a live session, by design:
     this keeps a misrouted request from writing to the real memory store.
   - EDEN_PORT is set to an unused port, because importing app.main force-kills
     any other process listening on EDEN_PORT.
+  - The public-site build limits are lifted (one "visitor" runs every task).
 
 Usage (from backend/):
     ../.venv/Scripts/python.exe benchmarks/run_benchmark.py [--only B01,B02] [--pause 12] [--tasks file.json]
@@ -27,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextvars
 import inspect
 import json
 import logging
@@ -44,6 +46,11 @@ os.environ["EDEN_PORT"] = "65011"
 os.environ["EDEN_VOICE_ENABLED"] = "false"
 os.environ["EDEN_MEMORY_ENABLED"] = "false"
 os.environ["EDEN_AGENT_ENABLED"] = "true"
+# Public-site rate limits (guard.py) would refuse tasks after the 6th, since
+# every task comes from the same "visitor". The benchmark measures build
+# quality, not those limits.
+os.environ["EDEN_MAX_AGENT_TASKS_PER_IP_PER_HOUR"] = "100000"
+os.environ["EDEN_MAX_AGENT_TASKS_PER_HOUR"] = "100000"
 sys.path.insert(0, str(BACKEND))
 
 import app.main as M  # noqa: E402  (env must be set first)
@@ -68,8 +75,11 @@ class Meter:
 METER = Meter()
 
 
+_PHASE: contextvars.ContextVar[str] = contextvars.ContextVar("phase", default="unknown")
+
+
 def _caller_phase() -> str:
-    for fr in inspect.stack()[2:]:
+    for fr in inspect.stack()[1:]:
         mod = fr.frame.f_globals.get("__name__", "")
         if mod.startswith("app.") and not mod.startswith("app.providers"):
             return mod.removeprefix("app.")
@@ -77,11 +87,21 @@ def _caller_phase() -> str:
 
 
 def _instrument_llm() -> None:
+    # The pipeline stage is read where stream_reply is called (the network call
+    # itself runs inside helper generators, whose stacks hide the caller).
+    stream_reply = M.LLM.stream_reply
+
+    def tagged(*args, **kwargs):
+        _PHASE.set(_caller_phase())
+        return stream_reply(*args, **kwargs)
+
+    M.LLM.stream_reply = tagged
+
     models = M.LLM._client.aio.models
     original = models.generate_content_stream
 
     async def wrapped(**kwargs):
-        rec = {"phase": _caller_phase(), "model": kwargs.get("model"),
+        rec = {"phase": _PHASE.get(), "model": kwargs.get("model"),
                "prompt_tokens": 0, "output_tokens": 0, "total_tokens": 0, "error": None}
         METER.calls.append(rec)
         try:
