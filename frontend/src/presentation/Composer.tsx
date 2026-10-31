@@ -26,6 +26,9 @@ const RecognitionCtor: SpeechRecognitionCtor | undefined =
 export default function Composer({ connected, presence, onSend, onListening }: Props) {
   const [value, setValue] = useState("");
   const [micOn, setMicOn] = useState(false);
+  // Why voice can't run right now, shown above the bar. Without this every
+  // failure was silent and the mic just looked dead.
+  const [notice, setNotice] = useState("");
   const recognitionRef = useRef<any>(null);
   // Whether the mic *should* be running — separate from micOn so onend can
   // tell a deliberate stop from the browser silently ending an utterance.
@@ -90,7 +93,11 @@ export default function Composer({ connected, presence, onSend, onListening }: P
   };
 
   const startMic = () => {
-    if (!RecognitionCtor) return;
+    if (!RecognitionCtor) {
+      setNotice("Voice input needs Chrome or Edge. You can still type to EDEN.");
+      return;
+    }
+    setNotice("");
     const rec = new RecognitionCtor();
     rec.continuous = true;
     rec.interimResults = false;
@@ -114,9 +121,19 @@ export default function Composer({ connected, presence, onSend, onListening }: P
       // and fall back to typing rather than retry forever.
       if (e?.error === "not-allowed" || e?.error === "service-not-allowed") {
         stopMic();
+        setNotice("Microphone blocked. Allow it from the icon in the address bar, then tap the mic again.");
+      } else if (e?.error === "audio-capture") {
+        stopMic();
+        setNotice("No microphone found. Plug one in, or type to EDEN.");
+      } else if (e?.error === "network") {
+        // Brave and other Chromium forks expose the API but can't reach
+        // Google's speech service, so this fails on every restart — without
+        // stopping here onend would retry in a silent loop forever.
+        stopMic();
+        setNotice("Voice input isn't available in this browser. Try Chrome or Edge, or type to EDEN.");
       }
-      // Other errors ("no-speech", "aborted", network blips) are routine;
-      // onend below decides whether to restart.
+      // Other errors ("no-speech", "aborted") are routine; onend below
+      // decides whether to restart.
     };
 
     rec.onend = () => {
@@ -147,9 +164,12 @@ export default function Composer({ connected, presence, onSend, onListening }: P
   const toggleMic = () => (micOn ? stopMic() : startMic());
 
   return (
-    <div className="absolute inset-x-0 bottom-7 flex justify-center px-6">
+    <div className="absolute inset-x-0 bottom-7 flex flex-col items-center gap-2 px-6">
+      {notice && <div className="max-w-xl text-center text-xs text-amber-200/80">{notice}</div>}
       <div
-        className="flex w-full max-w-xl items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 opacity-40 backdrop-blur-md transition duration-300 hover:opacity-100 focus-within:border-cyan-400/40 focus-within:bg-white/[0.06] focus-within:opacity-100"
+        className={`flex w-full max-w-xl items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 backdrop-blur-md transition duration-300 hover:opacity-100 focus-within:border-cyan-400/40 focus-within:bg-white/[0.06] focus-within:opacity-100 ${
+          presence === "off" ? "opacity-80" : "opacity-40"
+        }`}
       >
         <span
           className="h-1.5 w-1.5 flex-shrink-0 rounded-full transition"
@@ -160,20 +180,21 @@ export default function Composer({ connected, presence, onSend, onListening }: P
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder={micOn ? "Listening…" : "Speak to EDEN…"}
-          className="flex-1 bg-transparent text-sm text-white/90 outline-none placeholder:text-white/30"
+          placeholder={micOn ? "Listening… just talk" : "Type to EDEN, or tap the mic to talk"}
+          className="flex-1 bg-transparent text-sm text-white/90 outline-none placeholder:text-white/40"
         />
-        {RecognitionCtor && (
-          <button
-            onClick={toggleMic}
-            className="flex-shrink-0 transition"
-            style={{ color: micOn ? "#5eead4" : "rgba(255,255,255,0.4)" }}
-            aria-label={micOn ? "Stop listening" : "Start listening"}
-            title={micOn ? "Stop listening" : "Start listening"}
-          >
-            {micOn ? "●" : "○"}
-          </button>
-        )}
+        <button
+          onClick={toggleMic}
+          className="flex-shrink-0 transition hover:text-cyan-200"
+          style={{ color: micOn ? "#5eead4" : "rgba(255,255,255,0.6)" }}
+          aria-label={micOn ? "Stop listening" : "Start listening"}
+          title={micOn ? "Stop listening" : "Tap to talk"}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill={micOn ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="9" y="2" width="6" height="12" rx="3" />
+            <path d="M5 10a7 7 0 0 0 14 0M12 17v5" />
+          </svg>
+        </button>
         <button
           onClick={() => submit()}
           className="flex-shrink-0 text-white/40 transition hover:text-cyan-200"
