@@ -2,6 +2,8 @@
 
 A futuristic AI companion inspired by JARVIS, FRIDAY, and EDITH — built as a **live demonstration of modern AI** for a Generative AI guest lecture.
 
+🌐 **Live demo:** [eden-alpha-sable.vercel.app](https://eden-alpha-sable.vercel.app) — the backend runs on Render's free tier, so the first request after a quiet spell can take up to a minute to wake it.
+
 EDEN is **not** a chatbot and **not** a simple LLM wrapper. It is an interactive AI system that can **listen, reason, create, and collaborate** — showcasing voice interaction, AI agents, multimodal AI, and AI-assisted software creation through a premium, cinematic HUD.
 
 ## What EDEN does
@@ -12,7 +14,7 @@ EDEN is **not** a chatbot and **not** a simple LLM wrapper. It is an interactive
 - ✨ **Cinematic interface** — dark, glassmorphic Iron Man / Vision Pro-style HUD with a reactive AI core.
 
 ## Status
-📋 **Blueprint phase complete.** Implementation has not started. See [`docs/`](docs/) for the full architecture and plan.
+✅ **Implemented and deployed** — frontend on Vercel, backend on Render (Docker). See [`docs/`](docs/) for the original architecture and plan.
 
 ## Blueprint (read in order)
 1. [Architecture](docs/01-architecture.md)
